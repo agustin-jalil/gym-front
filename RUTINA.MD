@@ -1,65 +1,84 @@
 # RUTINA — Trabajo automático sobre gym-front (agente en la nube)
 
 Lo lee cada sesión automática al arrancar. Cada sesión es independiente y no recuerda a la anterior:
-**el estado está en estos archivos, en la rama de versión `auto/v0.2` y en sus ramas de trabajo `auto/v0.2-wip-*`.**
+**el estado está en estos archivos, en la rama de cada versión (`auto/<versión>`) y en sus ramas de trabajo (`auto/<versión>-wip-Tn`).**
 
-Objetivo: dejar la versión completa en UNA rama (`auto/v0.2`) con un único PR contra `main`, ya verificado
-(test + typecheck + build en verde) para que el usuario solo revise y mergee.
+Objetivo: dejar cada versión completa en UNA rama (`auto/v0.2`, `auto/v0.3`, …) con un único PR, ya verificada
+(test + typecheck + build en verde) para que el usuario solo revise y mergee. Al cerrar una versión, el autopilot pasa solo a la siguiente.
 
 Archivos del sistema:
-- `RUTINA.MD` (este): protocolo y backlog.
-- `VERSIONES.MD`: qué contiene la versión ACTUAL, arquitectura, reglas de negocio y definición de "completa". Es la fuente de verdad del producto.
+- `RUTINA.MD` (este): protocolo, estado de las versiones y backlogs.
+- `VERSIONES.MD`: qué contiene cada versión, arquitectura, reglas de negocio y definición de "completa". Fuente de verdad del producto.
 - `RESULTADOS.MD`: informe de cada sesión (control del autopilot).
-- `ESTANDAR.MD`: pilares técnicos, flujo ideal por tarea y puerta de calidad para cerrar la versión.
+- `ESTANDAR.MD`: pilares técnicos, flujo ideal por tarea y puerta de calidad para cerrar una versión.
 
-## ESTADO DE LA VERSIÓN ACTUAL (v0.2): EN CURSO
+## ESTADO DE LAS VERSIONES
 
-> Valores posibles: `EN CURSO` | `BLOQUEADA` | `COMPLETA`.
-> **Si dice `COMPLETA` o `BLOQUEADA`: no hacer nada.** No leer código, no crear ramas, no escribir en RESULTADOS.MD.
-> Responder solo "Versión completa/bloqueada, sin trabajo automático pendiente" y terminar.
-> El valor válido es el de la rama `auto/v0.2` si existe; si no, el de `origin/main`.
-> `COMPLETA` en la rama significa "lista para que el usuario mergee"; tras el merge queda en `main`.
+> Valores: `PLANIFICADA` | `EN CURSO` | `BLOQUEADA` | `COMPLETA`. El orden de la lista es el orden de ejecución.
+> `COMPLETA` en la rama de la versión significa "lista para que el usuario mergee".
+
+- v0.2: EN CURSO
+- v0.3: PLANIFICADA
+- v0.4: PLANIFICADA (sin backlog: no se empieza)
+
+**Versión ACTUAL** = la primera de la lista cuyo estado no es `COMPLETA`.
+- Si la ACTUAL está `BLOQUEADA`: no avanzar a la siguiente. No hacer nada y terminar.
+- Si todas están `COMPLETA`, o la ACTUAL es `PLANIFICADA` pero no tiene backlog en este archivo: no hacer nada.
+  Responder solo "Sin trabajo automático pendiente" y terminar. No leer código, no crear ramas, no escribir en RESULTADOS.MD.
 
 ## Trabajo en curso
 
-<!-- Solo se escribe en una rama auto/v0.2-wip-*. Formato:
+<!-- Solo se escribe en una rama auto/<versión>-wip-*. Formato:
 Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 -->
 
 ## Protocolo de cada sesión
 
-0. `git fetch origin`. Si existe `origin/auto/v0.2`, trabajar sobre ella y leer ESTADO, Backlog y este protocolo **desde esa rama**
-   (puede ser más nueva que `main`). Si no existe, leer de `origin/main`. Si el ESTADO es `COMPLETA` o `BLOQUEADA`, terminar de inmediato.
-1. Leer `ESTANDAR.MD` (pilares y flujo ideal: obligatorio), `VERSIONES.MD` (versión ACTUAL), `AGENTS.md` y la guía relevante en
+0. **Orientarse.** `git fetch origin`. El ESTADO y los backlogs se leen de la rama de versión más nueva que exista en `origin` (`auto/v*`,
+   la de número mayor); si no existe ninguna, de `origin/main`. Determinar la versión ACTUAL con la regla de arriba. Si no hay trabajo, terminar.
+1. Leer `ESTANDAR.MD` (pilares y flujo ideal: obligatorio), `VERSIONES.MD` (sección de la versión ACTUAL), `AGENTS.md` y la guía relevante en
    `node_modules/next/dist/docs/` antes de tocar código (este Next.js tiene cambios incompatibles). Si falta `node_modules`, `pnpm install`.
-2. **Rama de versión:** si `auto/v0.2` no existe, crearla desde `origin/main` y abrir un PR **en borrador** `auto/v0.2` → `main`
-   (título "v0.2 — Backend, medidas y cargas") si hay herramienta; si no, dejar la rama pusheada. Nunca pushear a `main`, nunca mergear.
-3. **Retomar primero lo empezado:** si existe una rama `origin/auto/v0.2-wip-<Tn>`, continuar esa tarea desde ahí (leer "Trabajo en curso"
-   de esa rama: qué se probó, qué falló, próximo paso). No empezar de cero.
-4. Si no hay trabajo empezado, elegir la PRIMERA tarea `[ ]` del Backlog de `auto/v0.2` cuyas dependencias (`depende:`) estén `[x]` allí.
-5. Ejecutar la tarea con el flujo de `ESTANDAR.MD` (línea base, tests primero, implementar, tests, puerta de tarea, autorrevisión).
-6. **Insistir hasta que quede en verde.** Probar enfoques distintos, leer el error real, no repetir lo que ya falló. No hay un número fijo de
-   vueltas: el límite es el presupuesto de la sesión (ver punto 9).
-7. **Cuando la tarea está en verde** (`pnpm test` si existe + `pnpm typecheck` + `pnpm build`, y migraciones/tests contra Postgres cuando apliquen):
+2. **Rama de la versión ACTUAL** (`auto/<v>`):
+   - Si existe, usarla.
+   - Si no existe, crearla: desde `origin/main` si la versión anterior ya está mergeada en `main`; si **no** lo está, desde la rama de la versión anterior
+     (`auto/<v-anterior>`), para que el código nuevo parta del anterior. Cambiar el estado de la versión a `EN CURSO` en su primer commit.
+   - Abrir un PR **en borrador** de `auto/<v>` (título "<v> — <objetivo corto>") con base `main`, o con base `auto/<v-anterior>` si esa todavía no
+     está mergeada (GitHub lo redirige a `main` cuando la anterior se mergea). Si no hay herramienta, dejar la rama pusheada.
+   - Nunca pushear a `main`, nunca mergear, nunca force-push.
+3. **Sincronizar con main:** integrar `origin/main` en `auto/<v>` con `git merge` (no rebase) para recibir cambios del protocolo o de versiones ya mergeadas.
+   Si hay conflicto: en el protocolo y los límites de este archivo, gana `main`; en los `[x]` del backlog y el Registro, se conserva la unión de ambos lados.
+   Si un conflicto es de código y no se puede resolver con seguridad, anotar `PREGUNTA:` y terminar la sesión sin pushear.
+4. **Retomar primero lo empezado:** si existe `origin/auto/<v>-wip-<Tn>`, continuar esa tarea desde ahí (leer "Trabajo en curso" de esa rama:
+   qué se probó, qué falló, próximo paso). No empezar de cero.
+5. Si no hay trabajo empezado, elegir la PRIMERA tarea `[ ]` del Backlog de la versión ACTUAL cuyas dependencias (`depende:`) estén `[x]`.
+6. Ejecutar la tarea con el flujo de `ESTANDAR.MD` (línea base, tests primero, implementar, tests, puerta de tarea, autorrevisión).
+7. **Insistir hasta que quede en verde.** Probar enfoques distintos, leer el error real, no repetir lo que ya falló. No hay un número fijo de
+   vueltas: el límite es el presupuesto de la sesión (punto 10).
+8. **Cuando la tarea está en verde** (`pnpm test` si existe + `pnpm typecheck` + `pnpm build`, y migraciones/tests contra Postgres cuando apliquen):
    - marcar la tarea `[x]`, línea en "Cambios de la versión" de `VERSIONES.MD`, línea en el Registro de este archivo;
-   - **un commit por tarea** con mensaje claro (`Tn: resumen`), integrarlo en `auto/v0.2` (`git pull --rebase` antes; **nunca force-push**) y pushear;
-   - si la tarea venía de una rama `auto/v0.2-wip-<Tn>`, borrarla del remoto.
-   **Nunca pushear a `auto/v0.2` algo en rojo**: esa rama siempre debe compilar y pasar sus tests.
-8. **Seguir con la siguiente tarea elegible** en la misma sesión mientras quede presupuesto (volver al punto 4).
-9. **Presupuesto y corte:** trabajar hasta acercarse al límite de uso/contexto de la sesión (alrededor del 90 % si se puede medir; si no se puede
-   medir, cerrar ordenadamente tras 3 tareas o cuando el contexto se note muy largo). Si en ese momento hay una tarea a medias:
-   - commitear lo avanzado (aunque esté en rojo) en `auto/v0.2-wip-<Tn>` (rama aparte, desde `auto/v0.2`) y pushearla;
-   - escribir en "Trabajo en curso" de esa rama lo probado, lo que falló y el próximo paso concreto;
-   - la próxima sesión la retoma por el punto 3.
-10. **Bloqueo:** si una misma tarea acumula 3 sesiones seguidas sin avanzar, anotar `BLOQUEO:` con el motivo bajo la tarea (en `auto/v0.2`),
-    dejarla y pasar a otra tarea elegible que no dependa de ella. Si no queda ninguna elegible, poner ESTADO `BLOQUEADA`, resumir en RESULTADOS.MD y parar.
-11. **Informe:** al terminar la sesión, una entrada en `RESULTADOS.MD` (plantilla allí) que liste todas las tareas tocadas, con tiempos medidos con `date -u`
-    y la verificación realmente ejecutada. Va en un commit a `auto/v0.2`.
-12. **Cierre de la versión:** cuando no queda ninguna `[ ]` (salvo bloqueadas ya explicadas), ejecutar la "Puerta de versión" de `ESTANDAR.MD`
-    sobre `auto/v0.2` y verificar cada punto de "Definición de versión completa" de `VERSIONES.MD`. Si todo pasa: ESTADO `COMPLETA`, v0.2 `HECHA`,
-    resumen final y evidencias en RESULTADOS.MD, y marcar el PR como **listo para revisión** (sacarlo de borrador) con un cuerpo que resuma
-    qué entra, cómo se probó y qué decisiones quedan para el usuario. Si falta algo, agregarlo como tarea `[ ]` y seguir.
-13. Si no hay nada elegible ni empezado y la versión no está completa, terminar con "sin trabajo elegible" y explicar por qué.
+   - **un commit por tarea** (`Tn: resumen`) en `auto/<v>`, con `git pull --rebase` previo del propio branch y push (**nunca force-push**);
+   - si la tarea venía de una rama `auto/<v>-wip-<Tn>`, borrarla del remoto.
+   **Nunca pushear a `auto/<v>` algo en rojo**: esa rama siempre debe compilar y pasar sus tests.
+9. **Seguir con la siguiente tarea elegible** en la misma sesión mientras quede presupuesto (volver al punto 5).
+10. **Presupuesto y corte:** trabajar hasta acercarse al límite de uso/contexto de la sesión (alrededor del 90 % si se puede medir; si no se puede
+    medir, cerrar ordenadamente tras 3 tareas o cuando el contexto se note muy largo). Si en ese momento hay una tarea a medias:
+    - commitear lo avanzado (aunque esté en rojo) en `auto/<v>-wip-<Tn>` (rama aparte, desde `auto/<v>`) y pushearla;
+    - escribir en "Trabajo en curso" de esa rama lo probado, lo que falló y el próximo paso concreto;
+    - la próxima sesión la retoma por el punto 4.
+11. **Bloqueo:** si una misma tarea acumula 3 sesiones seguidas sin avanzar, anotar `BLOQUEO:` con el motivo bajo la tarea (en `auto/<v>`),
+    dejarla y pasar a otra tarea elegible que no dependa de ella. Si no queda ninguna elegible, poner el estado de la versión en `BLOQUEADA`,
+    resumir en RESULTADOS.MD y parar (no se avanza a la siguiente versión).
+12. **Informe:** al terminar la sesión, una entrada en `RESULTADOS.MD` (plantilla allí) que liste todas las tareas tocadas, con tiempos medidos con `date -u`
+    y la verificación realmente ejecutada. Va en un commit a `auto/<v>`.
+13. **Cierre de la versión:** cuando no queda ninguna `[ ]` (salvo bloqueadas ya explicadas), ejecutar la "Puerta de versión" de `ESTANDAR.MD`
+    sobre `auto/<v>` y verificar cada punto de "Definición de versión completa" de `VERSIONES.MD`. Si todo pasa:
+    - estado de la versión `COMPLETA` en este archivo y en `VERSIONES.MD`;
+    - resumen final y evidencias en RESULTADOS.MD;
+    - marcar el PR como **listo para revisión** (sacarlo de borrador) con un cuerpo que resuma qué entra, cómo se probó y qué decisiones quedan para el usuario.
+    Si falta algo, agregarlo como tarea `[ ]` y seguir.
+14. **Pasar a la versión siguiente:** si todavía queda presupuesto en la sesión, volver al punto 0: la siguiente versión de la lista pasa a ser la ACTUAL
+    (solo si tiene backlog). Si no queda presupuesto, la próxima sesión lo hace sola. Ese cambio no espera el merge del usuario.
+15. Si no hay nada elegible ni empezado y la versión no está completa, terminar con "sin trabajo elegible" y explicar por qué.
 
 ## Límites (no hacer sin que el usuario lo pida)
 
@@ -67,7 +86,7 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 - Nunca commitear secretos ni `.env`. La `DATABASE_URL` real del usuario no existe en la nube; usar `.env.example` y un Postgres local del entorno para probar.
 - No cambiar ni borrar datos de `localStorage` (`gym:v1`) sin migración que los conserve.
 - No tocar `AGENTS.md`. No pushear a `main`. No mergear. No hacer force-push.
-- No trabajar en versiones `PLANIFICADA`.
+- Trabajar solo en la versión ACTUAL. Una versión `PLANIFICADA` sin backlog nunca se empieza ni se inventa su alcance.
 - Si una tarea es ambigua, anotar `PREGUNTA:` bajo la tarea (y en RESULTADOS.MD) y elegir la opción más conservadora que no cierre puertas.
 
 ## Backlog v0.2
@@ -88,6 +107,16 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 - [ ] T12 · **`/progreso`:** evolución de cargas por ejercicio y de medidas en el tiempo. · depende: T9, T11
 - [ ] T13 · **Acceso protegido:** secreto por variable de entorno (middleware/proxy según la doc de esta versión) para todas las pantallas y la API. · depende: T4
 - [ ] T14 · **Pulido final:** estados vacíos/carga/error consistentes, revisión de layout en compact/medium/expanded, accesibilidad básica, README completo. · depende: T12, T13
+
+## Backlog v0.3
+
+> Solo se ejecuta cuando v0.3 es la versión ACTUAL (v0.2 `COMPLETA`). Depende de que `pnpm test` exista (creado en T10).
+
+- [ ] T15 · **`lib/autopilot.ts`:** lógica pura que parsea el texto de `RUTINA.MD` (estado de versiones, backlog con `[x]`/`[ ]`, dependencias, `BLOQUEO:`) y de `RESULTADOS.MD` (tabla resumen y entradas de sesión: fecha, resultado, duración, tiempo al 90 %, typecheck/build/tests). Tests `node --test` con casos normales, vacíos y de formato inválido. · depende: nada
+- [ ] T16 · **Lectura en servidor:** `lib/server/autopilot-files.ts` (`server-only`) que lee `RUTINA.MD`, `RESULTADOS.MD` y `VERSIONES.MD` de la raíz del proyecto y devuelve los datos parseados o un error tipado si falta un archivo. · depende: T15
+- [ ] T17 · **Pantalla `/autopilot` (versiones y tareas):** estado de cada versión, barra de progreso (hechas / totales) y lista de tareas con estado y dependencias. Entrada en la navegación. Estados de carga, vacío y error. · depende: T16
+- [ ] T18 · **`/autopilot` (sesiones):** últimas sesiones con fecha, resultado, duración, tiempo al 90 % y verificación; gráfico simple de duración por sesión con `components/charts.tsx`. · depende: T17
+- [ ] T19 · **Pulido de v0.3:** layout en compact/medium/expanded, accesibilidad, README documentando la pantalla y su fuente de datos. · depende: T18
 
 ## Registro
 

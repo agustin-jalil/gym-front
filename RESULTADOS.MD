@@ -4,7 +4,7 @@ Informe de cada sesión automática que abrió una rama de trabajo. Sirve para a
 de verdad y dónde se trabó. Las sesiones que no hacen nada (versión `COMPLETA`, tope de PRs abiertos) **no** escriben acá.
 
 Reglas de escritura (para el agente):
-- Una entrada por sesión, **al principio** de "Sesiones" (la más nueva arriba), en la rama `auto/v0.2`. Si la sesión tocó varias tareas, listarlas todas en la misma entrada.
+- Una entrada por sesión, **al principio** de "Sesiones" (la más nueva arriba), en la rama de la versión (`auto/<versión>`). Si la sesión tocó varias tareas, listarlas todas en la misma entrada.
 - Solo hechos. Si un comando falló, pegar la línea de error relevante. Si algo no se pudo verificar, decir **NO VERIFICADO** y por qué.
 - No inflar: "build pasó" solo si se corrió y pasó en esa sesión.
 

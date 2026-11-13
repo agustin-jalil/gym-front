@@ -79,9 +79,43 @@ Casos borde obligatorios: ejercicio sin historial (primera carga la ingresa el u
 
 ---
 
-## v0.3 — Ideas futuras · PLANIFICADA
+## v0.3 — Panel del autopilot (ver el resultado dentro de la app) · PLANIFICADA
 
-Sin comprometer. No trabajar en esto mientras v0.2 no esté `COMPLETA`.
+Empieza automáticamente cuando v0.2 queda `COMPLETA` (ver `RUTINA.MD`). Parte del código de v0.2.
+
+### Objetivo
+
+Una pantalla `/autopilot` dentro de la propia app que muestre, sin abrir GitHub, cómo avanza el trabajo automático:
+estado de cada versión, progreso por tareas y las últimas sesiones con su resultado, duración y verificación.
+Sirve para "ver el resultado" del autopilot en la app terminada.
+
+### Restricciones de arquitectura
+
+- Misma regla que v0.2: todo dentro de Next, sin servicios aparte, sin dependencias nuevas.
+- La fuente de datos son los archivos del repo (`RUTINA.MD`, `RESULTADOS.MD`, `VERSIONES.MD`), leídos desde el servidor (`server-only`).
+  Si un archivo falta o su formato cambió, la pantalla muestra un error claro, no se rompe.
+- Parseo en lógica pura (`lib/autopilot.ts`), sin I/O, con tests `node --test`.
+- Pantalla de solo lectura. Sin escritura sobre esos archivos.
+
+### Definición de versión completa
+
+- [ ] `pnpm test`, `pnpm typecheck` y `pnpm build` pasan.
+- [ ] `lib/autopilot.ts` parsea backlog, estados de versión y tabla/entradas de RESULTADOS.MD, con tests incluidos los casos de formato inválido o vacío.
+- [ ] `/autopilot` muestra el estado de cada versión y una barra de progreso por tareas hechas / totales.
+- [ ] `/autopilot` lista las tareas con su estado (`[x]`, `[ ]`, bloqueada) y sus dependencias.
+- [ ] `/autopilot` muestra las últimas sesiones: fecha, resultado, duración, tiempo al 90 % y estado de typecheck/build/tests.
+- [ ] Hay entrada de navegación a `/autopilot`, con estados de carga, vacío y error, usable en compact/medium/expanded.
+- [ ] README documenta la pantalla y de dónde saca los datos.
+
+### Cambios de la versión
+
+<!-- El autopilot agrega una línea por tarea: AAAA-MM-DD · Tn · resumen -->
+
+---
+
+## v0.4 — Ideas futuras · PLANIFICADA
+
+Sin comprometer: **no tiene backlog, así que el autopilot no la empieza** hasta que el usuario la defina.
 
 - Fotos de progreso.
 - Exportar a CSV.
