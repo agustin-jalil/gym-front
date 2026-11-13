@@ -1,0 +1,180 @@
+@import 'tailwindcss';
+
+/*
+ * Tokens de diseño. Oscuro por defecto, con un acento lima enérgico y superficies en carbón azulado.
+ * Los nombres son los de shadcn (--background, --primary…). Cambiá los valores acá para re-pintar toda la app.
+ * --gold es el naranja "llama" (racha, destacados).
+ */
+:root {
+  --background: hsl(60 25% 97%);       --foreground: hsl(240 20% 9%);
+  --card: hsl(0 0% 100%);              --card-foreground: hsl(240 20% 9%);
+  --primary: hsl(86 75% 22%);          --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(60 12% 94%);        --secondary-foreground: hsl(240 20% 14%);
+  --accent: hsl(75 40% 91%);           --accent-foreground: hsl(86 70% 18%);
+  --muted: hsl(60 12% 94%);            --muted-foreground: hsl(240 6% 38%);
+  /* border = decorativo · input = borde de control (>= 3:1) */
+  --border: hsl(60 10% 87%);           --input: hsl(240 6% 46%);        --ring: hsl(86 75% 28%);
+  --destructive: hsl(0 78% 50%);       --destructive-foreground: hsl(0 0% 100%);
+  --destructive-solid: hsl(0 64% 40%);
+  --success: hsl(152 62% 30%);         --success-ink: hsl(152 62% 24%);
+  --warning: hsl(38 95% 50%);          --warning-ink: hsl(32 90% 28%);
+  --destructive-ink: hsl(0 70% 40%);
+  --gold: hsl(24 90% 42%);
+  --chart-1: hsl(86 70% 32%); --chart-2: hsl(24 90% 48%); --chart-3: #1baf7a; --chart-4: #eda100;
+  --ease-standard: cubic-bezier(.2, 0, 0, 1);
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+}
+
+.dark {
+  --background: hsl(240 12% 6%);       --foreground: hsl(60 20% 95%);
+  --card: hsl(240 10% 10%);            --card-foreground: hsl(60 20% 95%);
+  --primary: hsl(76 92% 58%);          --primary-foreground: hsl(240 25% 7%);
+  --secondary: hsl(240 8% 16%);        --secondary-foreground: hsl(60 20% 92%);
+  --accent: hsl(240 8% 16%);           --accent-foreground: hsl(60 20% 95%);
+  --muted: hsl(240 9% 13%);            --muted-foreground: hsl(240 6% 66%);
+  --border: hsl(240 7% 18%);           --input: hsl(240 5% 44%);        --ring: hsl(76 92% 58%);
+  --destructive: hsl(0 82% 64%);       --destructive-foreground: hsl(240 25% 7%);
+  --destructive-solid: hsl(0 70% 48%);
+  --success: hsl(150 70% 52%);         --success-ink: hsl(150 65% 62%);
+  --warning: hsl(38 95% 58%);          --warning-ink: hsl(38 95% 64%);
+  --destructive-ink: hsl(0 90% 76%);
+  --gold: hsl(28 95% 62%);
+  --chart-1: hsl(76 92% 58%); --chart-2: hsl(28 95% 62%); --chart-3: #3fd8a0; --chart-4: #f2b84b;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+/* Clases de tamaño: compact < 600 · medium >= 600 · expanded >= 840 (se suman a los de Tailwind) */
+@theme {
+  --breakpoint-medium: 37.5rem;
+  --breakpoint-expanded: 52.5rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
+  --font-display: var(--font-outfit), Outfit, 'DM Sans', system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-ink: var(--success-ink);
+  --color-warning: var(--warning);
+  --color-warning-ink: var(--warning-ink);
+  --color-destructive-ink: var(--destructive-ink);
+  --color-gold: var(--gold);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  html { font-variant-numeric: tabular-nums; -webkit-tap-highlight-color: transparent; color-scheme: light; }
+  html.dark { color-scheme: dark; }
+  body { @apply bg-background text-foreground font-sans antialiased; line-height: 1.55; -webkit-text-size-adjust: 100%; }
+  h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; letter-spacing: -.015em; }
+  ::selection { background: color-mix(in srgb, var(--primary) 32%, transparent); }
+}
+
+/* Fondo: resplandores suaves (lima arriba a la izquierda, violeta arriba a la derecha) fijos al hacer scroll */
+.dark body {
+  background-image:
+    radial-gradient(46rem 28rem at 8% -6rem, hsl(76 90% 55% / .085), transparent 70%),
+    radial-gradient(42rem 28rem at 100% -4rem, hsl(268 80% 62% / .08), transparent 70%);
+  background-attachment: fixed;
+}
+
+/* Foco visible */
+:where(a, button, summary, [tabindex]):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* Táctil primero: objetivos >= 44 px y 16 px en campos (iOS hace zoom si son menores) */
+@media (max-width: 839px), (pointer: coarse) {
+  :where(button, select, input:not([type="checkbox"]):not([type="radio"]), textarea) { min-height: 44px; }
+}
+@media (max-width: 599px), (pointer: coarse) {
+  :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) { font-size: 16px; }
+}
+
+/* Tarjetas: superficie elevada con borde fino; al pasar, el borde se aviva */
+[data-slot="card"] { transition: border-color .18s var(--ease-standard), box-shadow .18s var(--ease-standard), transform .18s var(--ease-standard); }
+[data-slot="card"]:hover { border-color: color-mix(in srgb, var(--primary) 28%, var(--border)); }
+.dark [data-slot="card"] { box-shadow: inset 0 1px 0 hsl(0 0% 100% / .035); }
+
+/* ===== Botones: redondeados, firmes, con brillo en el principal ===== */
+button[data-variant], a[data-variant] {
+  font-weight: 700; letter-spacing: .005em; border: 1px solid transparent; border-radius: 16px;
+  transition: background-color .18s var(--ease-standard), border-color .18s var(--ease-standard), color .18s var(--ease-standard),
+              box-shadow .2s var(--ease-standard), transform .14s var(--ease-standard), filter .18s var(--ease-standard);
+}
+[data-variant]:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+[data-variant]:disabled { opacity: .45; }
+
+[data-variant="default"] {
+  background: var(--primary); color: var(--primary-foreground);
+  box-shadow: 0 8px 22px -10px color-mix(in srgb, var(--primary) 75%, transparent), inset 0 1px 0 hsl(0 0% 100% / .22);
+}
+[data-variant="default"]:hover:not(:disabled) { filter: brightness(1.07); transform: translateY(-1px); }
+[data-variant="default"]:active:not(:disabled) { transform: none; filter: brightness(.96); }
+
+[data-variant="destructive"] { background: var(--destructive-solid); color: hsl(0 0% 100%); }
+[data-variant="destructive"]:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+[data-variant="destructive"]:active:not(:disabled) { transform: none; }
+
+[data-variant="secondary"] { background: var(--secondary); color: var(--secondary-foreground); }
+[data-variant="secondary"]:hover:not(:disabled) { background: color-mix(in srgb, var(--secondary) 80%, var(--primary)); }
+
+[data-variant="outline"] { background: transparent; color: var(--foreground); border-color: var(--input); }
+[data-variant="outline"]:hover:not(:disabled) { background: var(--accent); border-color: color-mix(in srgb, var(--primary) 50%, var(--input)); }
+
+[data-variant="ghost"] { background: transparent; color: var(--foreground); }
+[data-variant="ghost"]:hover:not(:disabled) { background: var(--accent); }
+
+/* Cursor de mano en todo lo pulsable */
+:where(button, summary, select, a[href], label[for], input[type="checkbox"]):not(:disabled) { cursor: pointer; }
+:where(button, select, input):disabled { cursor: not-allowed; }
+
+/* Iconos Lucide: trazo redondeado y amable */
+:where(svg.lucide) { stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Skeleton con barrido de luz */
+[data-slot="skeleton"] { position: relative; overflow: hidden; }
+[data-slot="skeleton"]::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--foreground) 7%, transparent), transparent);
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+/* Entrada suave de las pantallas */
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise .35s var(--ease-out) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Diálogo nativo */
+dialog { margin: auto; }
+dialog::backdrop { background: hsl(240 20% 3% / .65); backdrop-filter: blur(3px); }
