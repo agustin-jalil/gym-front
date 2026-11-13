@@ -94,7 +94,7 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 > Formato: `- [ ] Tn · descripción · depende: Tx`. El orden es la prioridad. El detalle de reglas está en `VERSIONES.MD`.
 
 - [x] T1 · **Capa de base de datos:** agregar `pg`, `lib/server/db.ts` (pool, `server-only`, `DATABASE_URL`), runner `pnpm db:migrate` y `db/migrations/0001_init.sql` con el modelo de datos mínimo de `VERSIONES.MD`. Crear `.env.example`. Documentar en README.
-- [ ] T2 · **Repositorios de servidor:** funciones en `lib/server/` para ejercicios, rutinas (con `type`), días y ejercicios de rutina. Sin UI todavía. · depende: T1
+- [x] T2 · **Repositorios de servidor:** funciones en `lib/server/` para ejercicios, rutinas (con `type`), días y ejercicios de rutina. Sin UI todavía. · depende: T1
 - [ ] T3 · **API en Next** (route handlers o server actions según la doc de esta versión) para CRUD de rutinas y ejercicios, con validación de entrada y errores claros. · depende: T2
 - [ ] T4 · **Migrar `lib/store.ts`** para que `useGym()` y `gym.*` lean/escriban vía la API, manteniendo la misma interfaz pública y estados de carga/error en las pantallas. · depende: T3
 - [ ] T5 · **Tipo de rutina en el editor** (`/rutinas/[id]`): selector hipertrofia / estrés metabólico, con rangos de reps y descanso por defecto según tipo. · depende: T4
@@ -122,3 +122,4 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 
 <!-- Una línea por tarea cerrada: AAAA-MM-DD HH:MM · Tn · OK/BLOQUEADA (detalle en RESULTADOS.MD) -->
 2026-11-13 21:48 · T1 · OK
+2026-11-13 22:49 · T2 · OK
