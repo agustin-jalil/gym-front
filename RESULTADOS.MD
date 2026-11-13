@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 0 | 0 | 0 | 0 | — | — | — |
+| 1 | 1 | 0 | 1 | ~5 | NO DISPONIBLE | 2026-11-13 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -43,3 +43,24 @@ Reglas de escritura (para el agente):
 ## Sesiones
 
 <!-- Entradas nuevas arriba de esta línea, debajo del título. -->
+
+### 2026-11-13 21:48 (UTC) · T1 · Capa de base de datos
+- Resultado: OK
+- Rama / PR: auto/T1-capa-db · sin PR (rama pusheada)
+- Qué hizo: agregó `pg`, `lib/server/db.ts` (pool singleton, `server-only`), runner `pnpm db:migrate` (transaccional por archivo, lock advisory, tabla `schema_migrations`), `0001_init.sql` con todo el modelo de VERSIONES.MD, `.env.example` y sección en README.
+- Archivos tocados: package.json, pnpm-lock.yaml, lib/server/db.ts, scripts/migrate.mjs, db/migrations/0001_init.sql, .env.example, .gitignore, README.md, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm typecheck: PASÓ (línea base también pasaba)
+  - pnpm build: PASÓ (línea base también pasaba)
+  - node --test: NO APLICA (T10 crea el script de tests)
+  - Contra Postgres real: SÍ (Postgres 16 local; `pnpm db:migrate` desde base vacía creó 8 tablas, segunda corrida: "base al día"; sin DATABASE_URL sale con error claro). `lib/server/db.ts` NO se ejecutó en runtime (aún nadie lo usa), solo typecheck/build.
+- Decisiones tomadas y por qué:
+  - Runner en `scripts/migrate.mjs` (Node puro, `--env-file-if-exists=.env.local`) para no depender de TS ni de nuevas dependencias.
+  - Test primero no aplicado: no hay lógica pura; se verificó ejecutando el runner dos veces.
+  - Se agregó `server-only` (permitido) y `@types/pg` como devDependency (necesario para TS estricto sin `any`; solo tipos).
+- Problemas / PREGUNTAS para el usuario: PREGUNTA: confirmar que `@types/pg` (solo tipos, dev) es aceptable.
+- Dependencias agregadas: pg, server-only, @types/pg (dev)
+- Tareas que quedaron desbloqueadas / siguiente sugerida: T2, T8 (T10 no depende de nada)
+- Esfuerzo: ~12 comandos, 0 reintentos de verificación.
+- Tiempos: inicio 21:48 UTC / fin 21:50 UTC, ~2 min. Tiempo al 90 %: NO DISPONIBLE.
+
