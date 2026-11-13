@@ -75,6 +75,8 @@ Casos borde obligatorios: ejercicio sin historial (primera carga la ingresa el u
 
 <!-- El autopilot agrega una línea por tarea mergeada: AAAA-MM-DD · Tn · resumen -->
 
+- 2026-11-13 · T1 · Capa de base de datos: `pg`, `lib/server/db.ts`, `pnpm db:migrate`, `0001_init.sql`, `.env.example`.
+
 ---
 
 ## v0.3 — Ideas futuras · PLANIFICADA

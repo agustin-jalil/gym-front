@@ -10,7 +10,14 @@ pnpm install
 pnpm dev        # http://localhost:3030
 pnpm build && pnpm start
 pnpm typecheck
+pnpm db:migrate # aplica db/migrations/*.sql sobre DATABASE_URL
 ```
+
+## Base de datos (v0.2, en construcción)
+
+PostgreSQL, accedido solo desde código de servidor (`lib/server/db.ts`, `server-only`). Copiá `.env.example` a `.env.local`
+y completá `DATABASE_URL`. `pnpm db:migrate` crea el esquema desde cero y es idempotente (registra lo aplicado en
+`schema_migrations`). Las migraciones viven en `db/migrations/` y se aplican en orden alfabético.
 
 ## Stack
 
