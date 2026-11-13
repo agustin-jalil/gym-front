@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 1 | 1 | 0 | 1 | ~5 | NO DISPONIBLE | 2026-11-13 |
+| 2 | 3 | 0 | 2 | ~4 | NO DISPONIBLE | 2026-11-13 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -43,6 +43,28 @@ Reglas de escritura (para el agente):
 ## Sesiones
 
 <!-- Entradas nuevas arriba de esta línea, debajo del título. -->
+
+### 2026-11-13 22:48 (UTC) · T2, T3 · Repositorios y API de rutinas/ejercicios
+- Resultado: OK con salvedades
+- Rama / PR: auto/v0.2 · #2 (borrador)
+- Qué hizo: T2 repositorios `lib/server/exercises.ts` y `routines.ts` (rutinas anidadas, creación/actualización transaccional). T3 validación pura `lib/validation.ts` y route handlers `/api/exercises`, `/api/exercises/[id]`, `/api/routines`, `/api/routines/[id]`, con errores claros y sin filtrar detalles de pg (`lib/server/http.ts`). Script `pnpm test` y `allowImportingTsExtensions` en tsconfig (necesario para que los tests importen `.ts` con `node --test`).
+- Archivos tocados: lib/server/{exercises,routines,http}.ts, lib/validation.ts, app/api/**, tests/*.test.ts, package.json, tsconfig.json, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ (rutas /api listadas como dinámicas)
+  - node --test: PASÓ (15 tests: 8 repositorios contra Postgres, 7 validación)
+  - Contra Postgres real: SÍ (Postgres 16 local; smoke de la API con `next start` y curl: 201, 400 JSON/uuid/tipo inválido, 404)
+- Decisiones tomadas y por qué:
+  - Los repositorios reciben `db` (Pool/Client) por parámetro: testeables sin mocks; las rutas pasan `getPool()`.
+  - `RouteContext` de Next solo existe tras build; se usó un tipo explícito para que `typecheck` funcione en checkout limpio.
+  - Los tests de repositorios se saltan si no hay `DATABASE_URL`; en la sesión se corrieron con ella definida.
+  - Aviso de honestidad: en T2 los tests se escribieron junto con la implementación (no se vio el rojo previo); en T3 sí se vio fallar por módulo inexistente.
+  - `.next` era línea base: typecheck/build ya pasaban en main.
+- Problemas / PREGUNTAS para el usuario: ninguno
+- Dependencias agregadas: ninguna
+- Tareas que quedaron desbloqueadas / siguiente sugerida: T4 (T8, T10 también elegibles)
+- Esfuerzo: ~25 comandos, 2 reintentos de verificación (tsconfig para imports .ts; RouteContext).
+- Tiempos: inicio 22:48 UTC / fin 22:52 UTC, ~4 min. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-13 21:48 (UTC) · T1 · Capa de base de datos
 - Resultado: OK
