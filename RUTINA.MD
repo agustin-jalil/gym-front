@@ -7,6 +7,7 @@ Archivos del sistema:
 - `RUTINA.MD` (este): protocolo y backlog.
 - `VERSIONES.MD`: qué contiene la versión ACTUAL, arquitectura, reglas de negocio y definición de "completa". Es la fuente de verdad del producto.
 - `RESULTADOS.MD`: informe de cada sesión (control del autopilot).
+- `ESTANDAR.MD`: pilares técnicos, flujo ideal por tarea y puerta de calidad para cerrar la versión.
 
 ## ESTADO DE LA VERSIÓN ACTUAL (v0.2): EN CURSO
 
@@ -17,7 +18,7 @@ Archivos del sistema:
 ## Protocolo de cada sesión
 
 0. Mirar la línea de ESTADO de arriba (en `origin/main`). Si es `COMPLETA`, terminar de inmediato.
-1. Leer `VERSIONES.MD` (sección de la versión ACTUAL), `AGENTS.md` y la guía relevante en `node_modules/next/dist/docs/` antes de tocar código (este Next.js tiene cambios incompatibles). Si falta `node_modules`, correr `pnpm install`.
+1. Leer `ESTANDAR.MD` (pilares y flujo ideal: es obligatorio seguirlo), `VERSIONES.MD` (sección de la versión ACTUAL), `AGENTS.md` y la guía relevante en `node_modules/next/dist/docs/` antes de tocar código (este Next.js tiene cambios incompatibles). Si falta `node_modules`, correr `pnpm install`.
 2. `git fetch origin` y listar ramas remotas `auto/*` (`git ls-remote --heads origin 'auto/*'`).
 3. **Tope de pendientes:** si ya hay 3 o más ramas `auto/*` abiertas (PRs sin mergear), no empezar nada nuevo: terminar con un resumen breve (sin escribir en RESULTADOS.MD).
 4. Elegir la PRIMERA tarea `[ ]` del Backlog (de `origin/main`) cuyo id NO tenga ya una rama `auto/<id>-*` en el remoto y cuyas dependencias (`depende:`) estén `[x]` en `main`. Una sola tarea por sesión.
@@ -28,7 +29,7 @@ Archivos del sistema:
 9. En la misma rama: marcar la tarea `[x]`, agregar una línea en "Cambios de la versión" de `VERSIONES.MD` y **escribir la entrada de la sesión en `RESULTADOS.MD`** (plantilla incluida allí) actualizando el resumen acumulado.
 10. Commit claro y `git push origin auto/<id>-<slug>`. Abrir un PR contra `main` si hay herramienta; si no, dejar la rama pusheada (el usuario abre el PR).
 11. **Nunca** pushear a `main` directamente. Nunca mergear.
-12. **Cierre de la versión:** si no queda ninguna `[ ]` en el Backlog y no hay ramas `auto/*` abiertas (todo mergeado), verificar cada punto de "Definición de versión completa" en `VERSIONES.MD`. Si todos se cumplen, abrir una rama `auto/cierre` que cambie `ESTADO DE LA VERSIÓN ACTUAL` a `COMPLETA`, marque la versión como `HECHA` en `VERSIONES.MD` y deje su entrada en RESULTADOS.MD. Si falta algo, agregarlo como tarea nueva `[ ]`.
+12. **Cierre de la versión:** si no queda ninguna `[ ]` en el Backlog y no hay ramas `auto/*` abiertas (todo mergeado), ejecutar la "Puerta de versión" de `ESTANDAR.MD` (install, test, typecheck, build, migraciones) y verificar cada punto de "Definición de versión completa" en `VERSIONES.MD`. Si todos se cumplen, abrir una rama `auto/cierre` que cambie `ESTADO DE LA VERSIÓN ACTUAL` a `COMPLETA`, marque la versión como `HECHA` en `VERSIONES.MD` y deje su entrada en RESULTADOS.MD. Si falta algo, agregarlo como tarea nueva `[ ]`.
 13. Si quedan tareas `[ ]` pero todas tienen rama abierta o dependencias sin cumplir, no inventar trabajo: terminar con "todo en revisión".
 
 ## Límites (no hacer sin que el usuario lo pida)
