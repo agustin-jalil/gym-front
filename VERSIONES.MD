@@ -84,6 +84,7 @@ Casos borde obligatorios: ejercicio sin historial (primera carga la ingresa el u
 - 2026-11-13 · T2 · Repositorios de servidor (`lib/server/exercises.ts`, `routines.ts`) con tests contra Postgres; script `pnpm test`.
 - 2026-11-14 · T5 · Tipo de rutina en el editor: selector hipertrofia / estrés metabólico, rangos y descanso por defecto (`lib/routine-types.ts`).
 - 2026-11-14 · T10 · `lib/progression.ts`: carga sugerida (progresión doble, estrés metabólico, deload, casos borde) con 30 tests `node --test`.
+- 2026-11-14 · T9 · Medidas corporales (front): pantalla `/medidas` (alta, edición, borrado, historial, variación por campo), `lib/measurement-history.ts`, entrada en la navegación.
 - 2026-11-14 · T8 · Medidas corporales (back): `lib/measurements.ts` (validación), `lib/server/measurements.ts` (repositorio) y API `/api/measurements`.
 
 ---

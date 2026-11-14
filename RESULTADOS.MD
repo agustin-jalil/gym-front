@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 5 | 9 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
+| 6 | 10 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -41,6 +41,29 @@ Reglas de escritura (para el agente):
 ```
 
 ## Sesiones
+
+### 2026-11-14 06:53 (UTC) · T9 · Medidas corporales (front)
+- Resultado: OK
+- Rama / PR: auto/v0.2 · borrador existente
+- Qué hizo: lógica pura `lib/measurement-history.ts` (variación por campo, formato, parseo de campos con coma/punto) con 24 tests; pantalla `/medidas` (formulario de alta/edición, historial, borrado con confirmación, estados de carga/vacío/error); entrada "Medidas" en la navegación (riel y barra lateral; fuera de la barra inferior, que ya tiene 5).
+- Archivos tocados: lib/measurement-history.ts, tests/measurement-history.test.ts, app/medidas/page.tsx, components/app-shell.tsx, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ (`/medidas` listada)
+  - node --test: PASÓ (121 tests, con DATABASE_URL). Tests nuevos vistos en rojo antes (módulo inexistente).
+  - Contra Postgres real: SÍ. Migraciones desde base vacía y segunda corrida "al día". Smoke con `next start` + Playwright: alta de 2 mediciones, variación "−1,5 cm" visible y persistente tras recargar, edición con error de validación y luego guardado ("−1 cm"), borrado (queda 1 en la API), captura en 390 px sin desborde.
+  - NO VERIFICADO: estado de error de carga y "Reintentar" en `/medidas`; layout en medium/expanded (solo se miró compact); modo claro.
+- Decisiones tomadas y por qué:
+  - Variación = diferencia con la última medición anterior que tenga ese campo (no solo la inmediata), redondeada a 1 decimal. Así un campo omitido una vez no pierde su comparación.
+  - La pantalla pide los datos directo a `/api/measurements` (no pasa por `lib/store.ts`, cuya interfaz no incluye medidas).
+  - Fechas en UTC (AAAA-MM-DD), mostradas con año.
+  - Se exige al menos una medida por medición.
+- Problemas / PREGUNTAS para el usuario:
+  - Observación: los tests de repositorios dejan filas en `body_measurements` de la base usada (no la limpian); usar una base de pruebas aparte.
+- Dependencias agregadas: ninguna
+- Tareas que quedaron desbloqueadas / siguiente sugerida: T11 (T13 también elegible); T12 necesita T11
+- Esfuerzo: ~25 comandos, 3 reintentos del smoke (base con datos de tests, regex de fecha, breakpoint `compact` inexistente).
+- Tiempos: inicio 06:48 UTC / fin 06:53 UTC, ~5 min. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 05:10 (UTC) · T7 · Importar datos locales
 - Resultado: OK
