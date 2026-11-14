@@ -61,3 +61,18 @@ describe("parseNewRoutine", () => {
     if (!r.ok) assert.match(r.error, /type/);
   });
 });
+
+describe("id opcional elegido por el cliente", () => {
+  test("ejercicio: acepta uuid, rechaza otra cosa", () => {
+    const ok = parseNewExercise({ id: ID, name: "Press" });
+    assert.equal(ok.ok && ok.value.id, ID);
+    assert.equal(parseNewExercise({ id: "abc", name: "Press" }).ok, false);
+    const none = parseNewExercise({ name: "Press" });
+    assert.equal(none.ok && none.value.id, undefined);
+  });
+  test("rutina: acepta uuid, rechaza otra cosa", () => {
+    const ok = parseNewRoutine({ id: ID, name: "R", type: "hipertrofia", days: [] });
+    assert.equal(ok.ok && ok.value.id, ID);
+    assert.equal(parseNewRoutine({ id: 5, name: "R", type: "hipertrofia", days: [] }).ok, false);
+  });
+});

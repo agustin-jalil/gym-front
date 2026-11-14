@@ -16,9 +16,12 @@ export interface RoutineExercise {
   restSec: number
 }
 
+export type RoutineType = 'hipertrofia' | 'estres_metabolico'
+
 export interface Routine {
   id: string
   name: string
+  type: RoutineType
   /** Días de la semana en que toca (0 = domingo … 6 = sábado). */
   days: number[]
   exercises: RoutineExercise[]

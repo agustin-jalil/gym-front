@@ -8,7 +8,8 @@ import { Card } from '@/components/ui/card'
 import { Button, ButtonLink } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Field, Input, NativeSelect, NumField } from '@/components/ui/fields'
-import { EmptyState, LoadingState } from '@/components/ui/states'
+import { EmptyState } from '@/components/ui/states'
+import { GymLoading } from '@/components/gym-loading'
 import { gym, useGym } from '@/lib/store'
 import { MUSCLES, WEEK, cn } from '@/lib/utils'
 
@@ -22,7 +23,7 @@ export default function EditarRutinaPage({ params }: { params: Promise<{ id: str
   if (!g.hydrated)
     return (
       <PageContainer size="sm">
-        <LoadingState />
+        <GymLoading />
       </PageContainer>
     )
 

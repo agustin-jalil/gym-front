@@ -38,9 +38,11 @@ los componentes están en `components/ui`, el estado en `lib/store.ts`.
 
 ## Datos
 
-Hoy se guardan en `localStorage` (clave `gym:v1`), solo en el dispositivo. **Todo el acceso a datos pasa por
-`lib/store.ts`** (`useGym()` para leer y `gym.*` para escribir). Para pasar a un backend, reemplazá ese archivo
-manteniendo la misma interfaz y las pantallas no cambian.
+Rutinas y ejercicios se guardan en Postgres a través de `/api/*` (necesita `DATABASE_URL` y `pnpm db:migrate`; la
+migración `0002_seed.sql` carga el catálogo y las tres rutinas de ejemplo). El historial y el entrenamiento en curso
+siguen en `localStorage` (clave `gym:v1`) hasta que se muevan a la base. **Todo el acceso a datos pasa por
+`lib/store.ts`** (`useGym()` para leer y `gym.*` para escribir): carga con estado de error y reintento, cambios
+optimistas y guardado agrupado de la rutina que se edita.
 
 ## Personalizar
 

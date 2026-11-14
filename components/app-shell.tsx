@@ -1,5 +1,6 @@
 'use client'
 
+import { SyncErrorBanner } from '@/components/gym-loading'
 import * as React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -34,7 +35,12 @@ const isActive = (pathname: string, href: string) => (href === '/' ? pathname ==
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
-  if (pathname.startsWith('/entrenar')) return <main className="min-h-dvh">{children}</main>
+  if (pathname.startsWith('/entrenar')) return (
+      <main className="min-h-dvh">
+        <SyncErrorBanner />
+        {children}
+      </main>
+    )
 
   return (
     <>
@@ -74,6 +80,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <main className="min-h-dvh pb-[calc(4.5rem+env(safe-area-inset-bottom))] medium:pb-0 medium:pl-[72px] expanded:pl-60">
+        <SyncErrorBanner />
         {children}
       </main>
 

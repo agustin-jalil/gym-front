@@ -5,7 +5,8 @@ import { ClipboardList, Dumbbell, Plus } from 'lucide-react'
 import { PageContainer, PageHeader } from '@/components/page'
 import { RoutineCard } from '@/components/routine-card'
 import { Button, ButtonLink } from '@/components/ui/button'
-import { EmptyState, LoadingState } from '@/components/ui/states'
+import { EmptyState } from '@/components/ui/states'
+import { GymLoading } from '@/components/gym-loading'
 import { gym, useGym } from '@/lib/store'
 
 export default function RutinasPage() {
@@ -32,7 +33,7 @@ export default function RutinasPage() {
       />
 
       {!g.hydrated ? (
-        <LoadingState />
+        <GymLoading />
       ) : g.routines.length === 0 ? (
         <EmptyState
           icon={<ClipboardList />}

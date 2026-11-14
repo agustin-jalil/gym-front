@@ -7,7 +7,8 @@ import { BarChart, LineChart } from '@/components/charts'
 import { Card } from '@/components/ui/card'
 import { ButtonLink } from '@/components/ui/button'
 import { Field, NativeSelect } from '@/components/ui/fields'
-import { EmptyState, LoadingState, StatCard } from '@/components/ui/states'
+import { EmptyState, StatCard } from '@/components/ui/states'
+import { GymLoading } from '@/components/gym-loading'
 import { useGym } from '@/lib/store'
 import { exerciseHistory, weeklyVolume } from '@/lib/stats'
 import { dateShort, formatKg } from '@/lib/utils'
@@ -25,7 +26,7 @@ export default function ProgresoPage() {
   if (!g.hydrated)
     return (
       <PageContainer>
-        <LoadingState />
+        <GymLoading />
       </PageContainer>
     )
 

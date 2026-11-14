@@ -12,6 +12,7 @@ export interface ExerciseRecord {
 }
 
 export interface NewExercise {
+  id?: string;
   name: string;
   muscleGroup?: string | null;
   equipment?: string | null;
@@ -50,8 +51,9 @@ export async function getExercise(db: Queryable, id: string): Promise<ExerciseRe
 
 export async function createExercise(db: Queryable, input: NewExercise): Promise<ExerciseRecord> {
   const res = await db.query<ExerciseRow>(
-    `insert into exercises (name, muscle_group, equipment, is_custom) values ($1, $2, $3, $4) returning ${COLUMNS}`,
-    [input.name, input.muscleGroup ?? null, input.equipment ?? null, input.isCustom ?? true],
+    `insert into exercises (id, name, muscle_group, equipment, is_custom)
+     values (coalesce($1::uuid, gen_random_uuid()), $2, $3, $4, $5) returning ${COLUMNS}`,
+    [input.id ?? null, input.name, input.muscleGroup ?? null, input.equipment ?? null, input.isCustom ?? true],
   );
   return toRecord(res.rows[0]);
 }

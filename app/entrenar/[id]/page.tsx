@@ -8,7 +8,8 @@ import { Card } from '@/components/ui/card'
 import { Button, ButtonLink } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { NumField } from '@/components/ui/fields'
-import { EmptyState, LoadingState } from '@/components/ui/states'
+import { EmptyState } from '@/components/ui/states'
+import { GymLoading } from '@/components/gym-loading'
 import { gym, useGym } from '@/lib/store'
 import { lastTime } from '@/lib/stats'
 import { cn, formatClock, formatDuration, formatKg } from '@/lib/utils'
@@ -61,7 +62,7 @@ export default function EntrenarPage({ params }: { params: Promise<{ id: string 
   if (!g.hydrated)
     return (
       <PageContainer size="sm">
-        <LoadingState />
+        <GymLoading />
       </PageContainer>
     )
 
@@ -99,7 +100,7 @@ export default function EntrenarPage({ params }: { params: Promise<{ id: string 
   if (!draft)
     return (
       <PageContainer size="sm">
-        <LoadingState />
+        <GymLoading />
       </PageContainer>
     )
 

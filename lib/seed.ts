@@ -46,7 +46,8 @@ const ex = (exerciseId: string, sets: number, reps: number, weight: number, rest
   restSec,
 })
 
-const SEED_ROUTINES: Omit<Routine, 'createdAt'>[] = [
+/** Rutinas de ejemplo: viven en la migración 0002; acá solo sirven para derivar sus ids. */
+export const SEED_ROUTINES: Omit<Routine, 'createdAt' | 'type'>[] = [
   {
     id: 'seed-push',
     name: 'Empuje',
@@ -86,16 +87,5 @@ const SEED_ROUTINES: Omit<Routine, 'createdAt'>[] = [
 ]
 
 export function emptyState(): GymState {
-  return { exercises: SEED_EXERCISES, routines: [], sessions: [], draft: null }
-}
-
-/** Primer uso: catálogo + tres rutinas de ejemplo (se pueden editar o borrar). */
-export function seedState(): GymState {
-  const now = new Date().toISOString()
-  return {
-    exercises: SEED_EXERCISES,
-    routines: SEED_ROUTINES.map((r) => ({ ...r, createdAt: now })),
-    sessions: [],
-    draft: null,
-  }
+  return { exercises: [], routines: [], sessions: [], draft: null }
 }

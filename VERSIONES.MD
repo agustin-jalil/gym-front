@@ -27,6 +27,9 @@ Llevar el progreso real del usuario: guardar todo en **PostgreSQL**, registrar *
   según lo que indique `node_modules/next/dist/docs/`). Ningún servicio aparte.
 - Acceso a Postgres solo desde código de servidor (`server-only`), con `DATABASE_URL` por variable de entorno.
   Nunca commitear `.env`; mantener `.env.example`.
+- 2026-11-13 · T2 · Repositorios de servidor de ejercicios y rutinas.
+- 2026-11-13 · T3 · API `/api/exercises` y `/api/routines` con validación.
+- 2026-11-14 · T4 · `lib/store.ts` lee/escribe rutinas y ejercicios vía API (misma interfaz), migración 0002 con semillas, estados de carga/error.
 - Migraciones SQL versionadas en `db/migrations/` con un runner propio chico (`pnpm db:migrate`).
 - Driver: `pg` (única dependencia nueva permitida sin pedir permiso). Sin ORM.
 - Las pantallas siguen usando `useGym()` / `gym.*`: la interfaz de `lib/store.ts` se mantiene y su implementación pasa a hablar con el servidor.

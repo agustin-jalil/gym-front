@@ -18,6 +18,16 @@ describe("repositorios de servidor", { skip }, () => {
     await pool.end();
   });
 
+  test("ids elegidos por el cliente se respetan", async () => {
+    const id = "33333333-3333-4333-8333-333333333333";
+    const ex = await createExercise(pool, { id, name: "Con id" });
+    assert.equal(ex.id, id);
+    const r = await createRoutine(pool, { id: "44444444-4444-4444-8444-444444444444", name: "R", type: "hipertrofia", days: [] });
+    assert.equal(r.id, "44444444-4444-4444-8444-444444444444");
+    await deleteRoutine(pool, r.id);
+    await deleteExercise(pool, id);
+  });
+
   test("ejercicios: crear, leer, listar y borrar", async () => {
     const ex = await createExercise(pool, { name: "Press de banca", muscleGroup: "pecho" });
     assert.equal(ex.isCustom, true);

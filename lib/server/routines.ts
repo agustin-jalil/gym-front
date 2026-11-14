@@ -48,6 +48,7 @@ export interface NewRoutineDay {
 }
 
 export interface NewRoutine {
+  id?: string;
   name: string;
   type: RoutineType;
   days: NewRoutineDay[];
@@ -169,8 +170,8 @@ async function inTransaction<T>(pool: Pool, fn: (client: PoolClient) => Promise<
 export function createRoutine(pool: Pool, input: NewRoutine): Promise<RoutineRecord> {
   return inTransaction(pool, async (client) => {
     const r = await client.query<{ id: string }>(
-      "insert into routines (name, type) values ($1, $2) returning id",
-      [input.name, input.type],
+      "insert into routines (id, name, type) values (coalesce($1::uuid, gen_random_uuid()), $2, $3) returning id",
+      [input.id ?? null, input.name, input.type],
     );
     await insertDays(client, r.rows[0].id, input.days);
     return (await loadRoutines(client, r.rows[0].id))[0];

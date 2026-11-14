@@ -1,6 +1,7 @@
 export type Parsed<T> = { ok: true; value: T } | { ok: false; error: string };
 
 export interface ExerciseInput {
+  id?: string;
   name: string;
   muscleGroup: string | null;
   equipment: string | null;
@@ -22,6 +23,7 @@ export interface RoutineDayInput {
 }
 
 export interface RoutineInput {
+  id?: string;
   name: string;
   type: "hipertrofia" | "estres_metabolico";
   days: RoutineDayInput[];
@@ -61,15 +63,24 @@ function int(v: unknown, path: string, min: number, max: number): Parsed<number>
   return { ok: true, value: v };
 }
 
+function optionalId(v: unknown): Parsed<string | undefined> {
+  if (v === undefined) return { ok: true, value: undefined };
+  return isUuid(v) ? { ok: true, value: v } : fail("id debe ser un uuid");
+}
+
+const withId = (id: string | undefined) => (id === undefined ? {} : { id });
+
 export function parseNewExercise(input: unknown): Parsed<ExerciseInput> {
   if (!isRecord(input)) return fail("El cuerpo debe ser un objeto");
+  const id = optionalId(input.id);
+  if (!id.ok) return id;
   const name = text(input.name, "name");
   if (!name.ok) return name;
   const muscleGroup = optionalText(input.muscleGroup, "muscleGroup");
   if (!muscleGroup.ok) return muscleGroup;
   const equipment = optionalText(input.equipment, "equipment");
   if (!equipment.ok) return equipment;
-  return { ok: true, value: { name: name.value, muscleGroup: muscleGroup.value, equipment: equipment.value } };
+  return { ok: true, value: { ...withId(id.value), name: name.value, muscleGroup: muscleGroup.value, equipment: equipment.value } };
 }
 
 function parseExercise(input: unknown, path: string): Parsed<RoutineExerciseInput> {
@@ -127,6 +138,8 @@ function parseDay(input: unknown, path: string): Parsed<RoutineDayInput> {
 
 export function parseNewRoutine(input: unknown): Parsed<RoutineInput> {
   if (!isRecord(input)) return fail("El cuerpo debe ser un objeto");
+  const id = optionalId(input.id);
+  if (!id.ok) return id;
   const name = text(input.name, "name");
   if (!name.ok) return name;
   if (input.type !== "hipertrofia" && input.type !== "estres_metabolico") {
@@ -139,5 +152,5 @@ export function parseNewRoutine(input: unknown): Parsed<RoutineInput> {
     if (!parsed.ok) return parsed;
     days.push(parsed.value);
   }
-  return { ok: true, value: { name: name.value, type: input.type, days } };
+  return { ok: true, value: { ...withId(id.value), name: name.value, type: input.type, days } };
 }
