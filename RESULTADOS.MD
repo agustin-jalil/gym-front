@@ -42,7 +42,7 @@ Reglas de escritura (para el agente):
 
 ## Sesiones
 
-### 2026-11-14 07:05 (UTC) · T11 · Carga sugerida en /entrenar/[id]
+### 2026-11-14 06:55 (UTC) · T11 · Carga sugerida en /entrenar/[id]
 - Resultado: OK con salvedades
 - Rama / PR: auto/v0.2 · borrador existente
 - Qué hizo: `lib/suggestions.ts` (historial real → formato de `suggestLoad`, solo series hechas) con 6 tests; en `/entrenar/[id]` cada ejercicio muestra la sugerencia con su explicación y "Aceptar sugerencia" (completa kg y reps de las series pendientes; todo sigue editable a mano); selector de RPE opcional por serie (5–10 en pasos de 0,5). Se corrigió la cabecera de la grilla de series (alineación de columnas).
@@ -63,7 +63,7 @@ Reglas de escritura (para el agente):
 - Dependencias agregadas: ninguna
 - Tareas que quedaron desbloqueadas / siguiente sugerida: T12 (T9 y T11 hechas); T13 también elegible
 - Esfuerzo: ~20 comandos, 3 reintentos del smoke (servidor viejo sin matar, base sin rutinas, columnas de la grilla).
-- Tiempos: inicio 06:56 UTC / fin 07:05 UTC, ~9 min. Tiempo al 90 %: NO DISPONIBLE.
+- Tiempos: inicio 06:53 UTC / fin 06:55 UTC (de `date -u`), ~2 min. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 06:53 (UTC) · T9 · Medidas corporales (front)
 - Resultado: OK
