@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 6 | 10 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
+| 7 | 11 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -41,6 +41,29 @@ Reglas de escritura (para el agente):
 ```
 
 ## Sesiones
+
+### 2026-11-14 07:05 (UTC) · T11 · Carga sugerida en /entrenar/[id]
+- Resultado: OK con salvedades
+- Rama / PR: auto/v0.2 · borrador existente
+- Qué hizo: `lib/suggestions.ts` (historial real → formato de `suggestLoad`, solo series hechas) con 6 tests; en `/entrenar/[id]` cada ejercicio muestra la sugerencia con su explicación y "Aceptar sugerencia" (completa kg y reps de las series pendientes; todo sigue editable a mano); selector de RPE opcional por serie (5–10 en pasos de 0,5). Se corrigió la cabecera de la grilla de series (alineación de columnas).
+- Archivos tocados: lib/suggestions.ts, tests/suggestions.test.ts, app/entrenar/[id]/page.tsx, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ
+  - node --test: PASÓ (127 tests, con DATABASE_URL)
+  - Contra Postgres real: SÍ. Smoke con Playwright (390 px): sugerencia visible, RPE 8 guardado en `workout_sets` tras "Terminar", sugerencia que cambia con el historial (sesión incompleta → repetir), "Aceptar" aplica 62,5 kg × 8 a las series pendientes.
+  - NO VERIFICADO: medium/expanded y modo claro; el caso de cambio de tipo de rutina en la UI.
+- Decisiones tomadas y por qué:
+  - Aviso de honestidad: los tests de `lib/suggestions.ts` se escribieron junto con la implementación (no se vio el rojo previo); la lógica de reglas ya tenía sus tests en T10.
+  - `Session` no guarda el tipo de rutina de la época, así que el historial se considera del tipo actual: el caso "cambio de tipo" de `suggestLoad` no se dispara desde la UI. Dejarlo así es lo conservador.
+  - Rango de reps y paso de carga son los del tipo (por defecto 2,5 kg); el descanso sugerido se muestra pero no se aplica solo.
+  - Sin carga previa no hay botón "Aceptar" (la primera carga la elige la persona).
+- Problemas / PREGUNTAS para el usuario:
+  - PREGUNTA: ¿guardar el tipo de rutina (o el incremento mínimo por ejercicio) en cada entrenamiento para que el cambio de tipo y las mancuernas se contemplen? Requiere migración; no se hizo.
+- Dependencias agregadas: ninguna
+- Tareas que quedaron desbloqueadas / siguiente sugerida: T12 (T9 y T11 hechas); T13 también elegible
+- Esfuerzo: ~20 comandos, 3 reintentos del smoke (servidor viejo sin matar, base sin rutinas, columnas de la grilla).
+- Tiempos: inicio 06:56 UTC / fin 07:05 UTC, ~9 min. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 06:53 (UTC) · T9 · Medidas corporales (front)
 - Resultado: OK
