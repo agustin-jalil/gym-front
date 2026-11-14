@@ -136,7 +136,7 @@ export async function getRoutine(db: Queryable, id: string): Promise<RoutineReco
   return (await loadRoutines(db, id))[0] ?? null;
 }
 
-async function insertDays(client: PoolClient, routineId: string, days: NewRoutineDay[]): Promise<void> {
+export async function insertDays(client: PoolClient, routineId: string, days: NewRoutineDay[]): Promise<void> {
   for (const [dayPos, day] of days.entries()) {
     const d = await client.query<{ id: string }>(
       "insert into routine_days (routine_id, position, name, weekday) values ($1, $2, $3, $4) returning id",

@@ -11,6 +11,7 @@ import { uuid } from './uuid'
 import type { ExerciseRecord } from './server/exercises'
 import type { RoutineRecord } from './server/routines'
 import type { WorkoutRecord } from './server/workouts'
+import type { ImportResult } from './server/legacy-import'
 
 /**
  * Rutinas, ejercicios y entrenamientos terminados viven en Postgres (vía /api). Solo el entrenamiento en curso
@@ -18,6 +19,7 @@ import type { WorkoutRecord } from './server/workouts'
  * `gym:v1` conserva sus `exercises`, `routines` y `sessions` originales sin tocar: los usa la importación única (T7).
  */
 const KEY = 'gym:v1'
+const IMPORTED_KEY = 'gym:v1:imported'
 const SYNC_DELAY_MS = 400
 
 interface Snapshot {
@@ -371,6 +373,30 @@ export const gym = {
   },
 
   /* Datos */
+  /** ¿Ya se importaron los datos de este navegador a la base? */
+  legacyImported(): boolean {
+    try {
+      return localStorage.getItem(IMPORTED_KEY) === '1'
+    } catch {
+      return false
+    }
+  },
+  /**
+   * Lleva el contenido viejo de `gym:v1` (rutinas, ejercicios propios e historial) a la base, una sola vez.
+   * No borra nada de `localStorage`. El servidor no duplica si se repite.
+   */
+  async importLegacy(): Promise<ImportResult> {
+    const raw = readRaw()
+    if (!raw) return { exercises: 0, routines: 0, workouts: 0, skipped: 0 }
+    const result = await api<ImportResult>('/api/import', { method: 'POST', body: JSON.stringify(raw) })
+    try {
+      localStorage.setItem(IMPORTED_KEY, '1')
+    } catch {
+      /* sin almacenamiento: el servidor igual evita duplicados */
+    }
+    await load()
+    return result
+  },
   exportJson(): string {
     return JSON.stringify(getSnapshot().state, null, 2)
   },

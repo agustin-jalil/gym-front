@@ -78,6 +78,7 @@ Casos borde obligatorios: ejercicio sin historial (primera carga la ingresa el u
 
 <!-- El autopilot agrega una línea por tarea mergeada: AAAA-MM-DD · Tn · resumen -->
 
+- 2026-11-14 · T7 · Importación única de `gym:v1` a la base: `POST /api/import` idempotente (ids deterministas), `lib/legacy-import.ts`, botón en `/ajustes`.
 - 2026-11-14 · T6 · Entrenamientos y series en Postgres: `/api/workouts`, `lib/workouts.ts`, repositorio, migración 0003 (`routine_name`), RPE opcional por serie; `store` lee/escribe vía API.
 - 2026-11-13 · T1 · Capa de base de datos: `pg`, `lib/server/db.ts`, `pnpm db:migrate`, `0001_init.sql`, `.env.example`.
 - 2026-11-13 · T2 · Repositorios de servidor (`lib/server/exercises.ts`, `routines.ts`) con tests contra Postgres; script `pnpm test`.

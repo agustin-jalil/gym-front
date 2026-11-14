@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import { Download, RotateCcw, Upload } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Download, DatabaseBackup, RotateCcw, Upload } from 'lucide-react'
 import { PageContainer, PageHeader, SectionHeader } from '@/components/page'
 import { ThemeToggle } from '@/components/theme'
 import { Alert } from '@/components/alert'
@@ -14,6 +14,29 @@ export default function AjustesPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const [msg, setMsg] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
   const [confirmReset, setConfirmReset] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const [imported, setImported] = useState(false)
+  useEffect(() => setImported(gym.legacyImported()), [])
+
+  const importLegacy = async () => {
+    setImporting(true)
+    try {
+      const r = await gym.importLegacy()
+      setImported(true)
+      const total = r.exercises + r.routines + r.workouts
+      setMsg({
+        tone: 'success',
+        text:
+          total === 0
+            ? 'No había datos nuevos para importar.'
+            : `Importado: ${r.workouts} entrenamientos, ${r.routines} rutinas y ${r.exercises} ejercicios propios.${r.skipped > 0 ? ` Se omitieron ${r.skipped} elementos que ya estaban o no se pudieron leer.` : ''}`,
+      })
+    } catch (e) {
+      setMsg({ tone: 'error', text: e instanceof Error ? e.message : 'No se pudo importar.' })
+    } finally {
+      setImporting(false)
+    }
+  }
 
   const exportData = () => {
     const blob = new Blob([gym.exportJson()], { type: 'application/json' })
@@ -76,6 +99,19 @@ export default function AjustesPage() {
                 }}
               />
             </div>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="space-y-3 p-4">
+            <p className="text-sm text-muted-foreground">
+              {imported
+                ? 'Ya importaste los datos guardados en este navegador. No se borraron del navegador, pero no hace falta repetirlo.'
+                : 'Si usaste la versión anterior en este navegador, llevá tu historial, tus rutinas y tus ejercicios propios a la base de datos. Se hace una sola vez y no duplica datos.'}
+            </p>
+            <Button variant="outline" onClick={() => void importLegacy()} disabled={importing || imported}>
+              <DatabaseBackup /> {importing ? 'Importando…' : 'Importar datos de este navegador'}
+            </Button>
           </div>
         </Card>
 

@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 5 | 8 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
+| 5 | 9 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -41,6 +41,25 @@ Reglas de escritura (para el agente):
 ```
 
 ## Sesiones
+
+### 2026-11-14 05:10 (UTC) · T7 · Importar datos locales
+- Resultado: OK
+- Rama / PR: auto/v0.2
+- Qué hizo: `lib/legacy-import.ts` (plan puro: ejercicios propios, rutinas que no son de ejemplo y sesiones con series hechas; los de ejemplo se referencian por su uuid de semilla), `lib/server/legacy-import.ts` (uuid v5-like determinista por sha1, inserción transaccional que omite lo ya existente y las series de ejercicios que ya no existen), `POST /api/import`, `gym.importLegacy()` / `gym.legacyImported()` y botón en `/ajustes` (deshabilitado tras importar; marca en `gym:v1:imported`). No borra ni modifica `gym:v1`.
+- Archivos tocados: lib/legacy-import.ts, lib/server/{legacy-import,routines}.ts, app/api/import/route.ts, lib/store.ts, app/ajustes/page.tsx, tests/legacy-import*.test.ts, README.md, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm test: PASÓ, 109 tests (los de lógica se vieron fallar antes por módulo inexistente; 2 fallos posteriores fueron errores del propio test: ids no-uuid y `push` vs `seed-push`, corregidos en el test, no en la implementación)
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ
+  - Contra Postgres real: SÍ (repositorio: importar, repetir sin duplicar, respaldo inválido). Navegador (Playwright, `next start`): `gym:v1` sembrado → clic en el botón → `/api/import` 200 → mensaje «Importado: 1 entrenamientos, 0 rutinas y 1 ejercicios propios» → `/historial` muestra los datos desde la base.
+- Decisiones:
+  - Rutinas importadas quedan como `hipertrofia` (v0.1 no tenía tipo). Ediciones locales a las rutinas de ejemplo no se importan (las de ejemplo ya están en la base).
+  - RPE no existía en `gym:v1`; las series importadas quedan sin RPE. `restSec` por ejercicio no se guarda (igual que T6).
+  - Un respaldo con series de ejercicios borrados del catálogo importa el resto y cuenta lo omitido.
+- Problemas / PREGUNTAS para el usuario: ninguno nuevo (sigue abierta la de T6 sobre reintento si falla guardar un entrenamiento).
+- Dependencias agregadas: ninguna
+- Tareas desbloqueadas / siguiente sugerida: T9 (T8 ✓), T11 (T6 ✓, T10 ✓), T13 (T4 ✓)
+- Tiempos: inicio 04:57 UTC / fin 05:10 UTC, ~13 min. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 04:55 (UTC) · T6 · Entrenamientos y series en Postgres
 - Resultado: OK con salvedades
