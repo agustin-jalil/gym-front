@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 4 | 5 | 0 | 2 | ~4 | NO DISPONIBLE | 2026-11-14 |
+| 4 | 6 | 0 | 2 | ~5 | NO DISPONIBLE | 2026-11-14 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -41,6 +41,26 @@ Reglas de escritura (para el agente):
 ```
 
 ## Sesiones
+
+### 2026-11-14 02:52 (UTC) · T10 · Lógica de progresión de cargas
+- Resultado: OK
+- Rama / PR: auto/v0.2
+- Qué hizo: `lib/progression.ts` con `suggestLoad` (hipertrofia: progresión doble, +2,5 % redondeado al incremento, deload 5/10 % tras 2 sesiones bajo el piso; estrés metabólico: reps → menos descanso (−5 s, mínimo 30 s) → +2,5 % con descanso mínimo). Casos borde: sin historial, series con reps 0 / valores inválidos, sesión incompleta (`plannedSets`), cambio de tipo, RPE > 9, rangos e incremento configurables.
+- Archivos tocados: lib/progression.ts, tests/progression.test.ts, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm test: PASÓ (56 tests; los de progresión se vieron fallar antes por módulo inexistente; 1 test de deload metabólico y 1 de cambio de tipo se ajustaron tras ver el rojo porque el dato/expectativa del test era inconsistente con la regla, no la lógica)
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ
+  - Contra Postgres real: NO APLICA (lógica pura)
+- Decisiones (interpretaciones de la spec, revisables):
+  - Carga de una sesión = kg más alto usado; "todas las series al tope" = la serie más floja llega al tope.
+  - Deload 10 % si faltan 3+ reps al piso en la última sesión, si no 5 %; siempre baja al menos un incremento.
+  - Sesión incompleta: no progresa ni cuenta para deload. Cambio de tipo: conserva kg y reinicia al piso del nuevo rango (descanso 120 s hipertrofia / 60 s metabólico).
+  - Metabólico sin descanso registrado: se asume 60 s, así que primero baja descanso.
+- Problemas / PREGUNTAS para el usuario: ninguno
+- Dependencias agregadas: ninguna
+- Tareas desbloqueadas / siguiente sugerida: T6 (T8 también elegible); T11 espera a T6
+- Tiempos: inicio 02:50 UTC / fin 03:00 UTC, ~10 min. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 02:48 (UTC) · T5 · Tipo de rutina en el editor
 - Resultado: OK

@@ -102,7 +102,7 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 - [ ] T7 · **Importar datos locales:** botón en `/ajustes` que lleva el contenido de `gym:v1` a la base, una sola vez y sin duplicar. · depende: T6
 - [ ] T8 · **Medidas corporales (back):** tabla, repositorio y API de `body_measurements` (cm). · depende: T1
 - [ ] T9 · **Medidas corporales (front):** pantalla `/medidas` con formulario, edición, historial y variación en cm respecto de la medición anterior; entrada en la navegación. · depende: T8
-- [ ] T10 · **`lib/progression.ts`:** lógica pura de cargas según `VERSIONES.MD`, con tests `node --test` que cubran las reglas y todos los casos borde. Script `pnpm test`. · depende: nada
+- [x] T10 · **`lib/progression.ts`:** lógica pura de cargas según `VERSIONES.MD`, con tests `node --test` que cubran las reglas y todos los casos borde. Script `pnpm test`. · depende: nada
 - [ ] T11 · **Carga sugerida en `/entrenar/[id]`:** mostrar sugerencia y explicación por ejercicio usando el historial real, permitir aceptar o ajustar, guardar RPE. · depende: T6, T10
 - [ ] T12 · **`/progreso`:** evolución de cargas por ejercicio y de medidas en el tiempo. · depende: T9, T11
 - [ ] T13 · **Acceso protegido:** secreto por variable de entorno (middleware/proxy según la doc de esta versión) para todas las pantallas y la API. · depende: T4
@@ -128,3 +128,4 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 2026-11-13 22:49 · T2 · OK
 2026-11-13 22:51 · T3 · OK
 2026-11-14 02:50 · T5 · OK
+2026-11-14 03:00 · T10 · OK
