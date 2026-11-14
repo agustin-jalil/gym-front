@@ -129,6 +129,7 @@ Sirve para "ver el resultado" del autopilot en la app terminada.
 - 2026-11-14 · T16 · `lib/server/autopilot-files.ts`: lectura en servidor de RUTINA/RESULTADOS/VERSIONES con errores tipados.
 - 2026-11-14 · T17 · `/autopilot`: versiones, barra de progreso y lista de tareas con estado y dependencias; entrada de navegación.
 - 2026-11-14 · T18 · `/autopilot`: últimas 10 sesiones con resultado, duración, tiempo al 90 % y verificación; gráfico de duración.
+- 2026-11-14 · T19 · Pulido: jerarquía de títulos, estado de error verificado, README documenta la pantalla y su fuente de datos.
 
 ---
 

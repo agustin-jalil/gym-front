@@ -116,7 +116,7 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 - [x] T16 · **Lectura en servidor:** `lib/server/autopilot-files.ts` (`server-only`) que lee `RUTINA.MD`, `RESULTADOS.MD` y `VERSIONES.MD` de la raíz del proyecto y devuelve los datos parseados o un error tipado si falta un archivo. · depende: T15
 - [x] T17 · **Pantalla `/autopilot` (versiones y tareas):** estado de cada versión, barra de progreso (hechas / totales) y lista de tareas con estado y dependencias. Entrada en la navegación. Estados de carga, vacío y error. · depende: T16
 - [x] T18 · **`/autopilot` (sesiones):** últimas sesiones con fecha, resultado, duración, tiempo al 90 % y verificación; gráfico simple de duración por sesión con `components/charts.tsx`. · depende: T17
-- [ ] T19 · **Pulido de v0.3:** layout en compact/medium/expanded, accesibilidad, README documentando la pantalla y su fuente de datos. · depende: T18
+- [x] T19 · **Pulido de v0.3:** layout en compact/medium/expanded, accesibilidad, README documentando la pantalla y su fuente de datos. · depende: T18
 
 ## Registro
 
@@ -141,3 +141,4 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 2026-11-14 10:51 · T16 · OK
 2026-11-14 10:52 · T17 · OK
 2026-11-14 10:53 · T18 · OK
+2026-11-14 10:56 · T19 · OK

@@ -83,7 +83,8 @@ function TaskRow({ task, all }: { task: BacklogTask; all: BacklogTask[] }) {
 
 export function AutopilotVersions({ rutina }: { rutina: RutinaData }) {
   return (
-    <div className="space-y-4">
+    <section className="space-y-3">
+      <SectionHeader title="Versiones" />
       {rutina.versions.map((v) => {
         const tasks = rutina.backlogs.find((b) => b.version === v.version)?.tasks ?? []
         const progress = taskProgress(tasks)
@@ -113,7 +114,7 @@ export function AutopilotVersions({ rutina }: { rutina: RutinaData }) {
           </Card>
         )
       })}
-    </div>
+    </section>
   )
 }
 
