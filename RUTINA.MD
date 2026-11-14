@@ -98,7 +98,7 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 - [x] T3 · **API en Next** (route handlers o server actions según la doc de esta versión) para CRUD de rutinas y ejercicios, con validación de entrada y errores claros. · depende: T2
 - [x] T4 · **Migrar `lib/store.ts`** para que `useGym()` y `gym.*` lean/escriban vía la API, manteniendo la misma interfaz pública y estados de carga/error en las pantallas. · depende: T3
 - [x] T5 · **Tipo de rutina en el editor** (`/rutinas/[id]`): selector hipertrofia / estrés metabólico, con rangos de reps y descanso por defecto según tipo. · depende: T4
-- [ ] T6 · **Entrenamientos y series en Postgres:** repositorios, API y conexión de `/entrenar/[id]`, `/historial` y la pantalla de inicio. Agregar RPE opcional por serie. · depende: T4
+- [x] T6 · **Entrenamientos y series en Postgres:** repositorios, API y conexión de `/entrenar/[id]`, `/historial` y la pantalla de inicio. Agregar RPE opcional por serie. · depende: T4
 - [ ] T7 · **Importar datos locales:** botón en `/ajustes` que lleva el contenido de `gym:v1` a la base, una sola vez y sin duplicar. · depende: T6
 - [x] T8 · **Medidas corporales (back):** tabla, repositorio y API de `body_measurements` (cm). · depende: T1
 - [ ] T9 · **Medidas corporales (front):** pantalla `/medidas` con formulario, edición, historial y variación en cm respecto de la medición anterior; entrada en la navegación. · depende: T8
@@ -122,6 +122,7 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 
 <!-- Una línea por tarea cerrada: AAAA-MM-DD HH:MM · Tn · OK/BLOQUEADA (detalle en RESULTADOS.MD) -->
 2026-11-13 21:48 · T1 · OK
+2026-11-14 04:55 · T6 · OK
 2026-11-13 22:52 · T2 · OK
 2026-11-13 22:52 · T3 · OK
 2026-11-14 00:53 · T4 · OK

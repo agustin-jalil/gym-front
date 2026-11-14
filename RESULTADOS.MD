@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 4 | 7 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
+| 5 | 8 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -41,6 +41,27 @@ Reglas de escritura (para el agente):
 ```
 
 ## Sesiones
+
+### 2026-11-14 04:55 (UTC) · T6 · Entrenamientos y series en Postgres
+- Resultado: OK con salvedades
+- Rama / PR: auto/v0.2
+- Qué hizo: `lib/workouts.ts` (validación pura de entrenamiento terminado: series, peso, reps, RPE 1–10 en pasos de 0,5), `lib/server/workouts.ts` (crear transaccional, listar, leer, borrar), `/api/workouts` y `/api/workouts/[id]`, migración `0003` (`workouts.routine_name`, para conservar el nombre si la rutina se borra), mapeos `toSession`/`toWorkoutInput`, `LoggedSet.rpe?`. `lib/store.ts` carga el historial de la API, guarda al terminar, borra y resetea vía API; en `localStorage` queda solo el borrador y `sessions` viejas intactas para T7.
+- Archivos tocados: lib/{workouts,types,api-mappers,store}.ts, lib/server/{workouts,routines}.ts, app/api/workouts/**, app/ajustes/page.tsx, db/migrations/0003_workout_routine_name.sql, tests/workouts-*.test.ts, README.md, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm test: PASÓ, 99 tests (los nuevos se vieron fallar antes por módulo inexistente)
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ
+  - Contra Postgres real: SÍ (Postgres 16 local; `db:migrate` sobre base vacía y segunda corrida sin cambios; smoke con `next start`+curl: 201, 400 por cuerpo inválido, 409 por ejercicio inexistente, 204 y 404 al borrar)
+  - Pantallas `/historial`, `/entrenar/[id]` e inicio: NO VERIFICADAS en navegador (solo typecheck/build); no usan aún RPE (T11).
+- Decisiones:
+  - El borrador sigue local; solo se envía el entrenamiento al terminarlo, con las series hechas.
+  - `restSec` por ejercicio no se guarda en la base; el historial lo devuelve en 0.
+  - `importJson` restaura solo el borrador (el historial viene de la base); la importación del historial es T7.
+  - Si el POST al terminar falla, el store muestra `syncError` y recarga desde el servidor: el entrenamiento terminado sin guardar se pierde. PREGUNTA: ¿querés reintento/cola local persistente? (más conservador no cerrar puertas: se dejó simple).
+- Problemas / PREGUNTAS para el usuario: la de arriba.
+- Dependencias agregadas: ninguna
+- Tareas desbloqueadas / siguiente sugerida: T7, T11 (necesita T10 ✓ y T6 ✓), T13
+- Tiempos: inicio 04:47 UTC / fin 04:55 UTC, ~8 min. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 03:00 (UTC) · T8 · Medidas corporales (back)
 - Resultado: OK

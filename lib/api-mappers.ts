@@ -1,7 +1,9 @@
-import type { Exercise, MuscleGroup, Routine, RoutineExercise } from './types.ts'
+import type { Exercise, LoggedExercise, MuscleGroup, Routine, RoutineExercise, Session } from './types.ts'
 import type { ExerciseRecord } from './server/exercises.ts'
 import type { RoutineExerciseRecord, RoutineRecord } from './server/routines.ts'
+import type { WorkoutRecord } from './server/workouts.ts'
 import type { RoutineInput } from './validation.ts'
+import type { WorkoutInput } from './workouts.ts'
 
 const MUSCLES: readonly string[] = ['pecho', 'espalda', 'piernas', 'hombros', 'brazos', 'core']
 const isMuscle = (v: string | null): v is MuscleGroup => v !== null && MUSCLES.includes(v)
@@ -50,4 +52,38 @@ export function toRoutineInput(r: Routine): RoutineInput {
       ? [{ name: 'Rutina', weekday: null, exercises }]
       : weekdays.map((weekday) => ({ name: WEEKDAYS[weekday] ?? 'Día', weekday, exercises }))
   return { id: r.id, name: r.name, type: r.type, days }
+}
+
+/** El servidor guarda series sueltas; el front las agrupa por ejercicio (en orden de aparición). Todas cuentan como hechas. */
+export function toSession(w: WorkoutRecord): Session {
+  const groups = new Map<string, LoggedExercise>()
+  for (const s of w.sets) {
+    const group = groups.get(s.exerciseId) ?? { exerciseId: s.exerciseId, restSec: 0, sets: [] }
+    group.sets.push({ reps: s.reps, weight: s.weightKg, done: true, ...(s.rpe === null ? {} : { rpe: s.rpe }) })
+    groups.set(s.exerciseId, group)
+  }
+  return {
+    id: w.id,
+    routineId: w.routineId ?? '',
+    routineName: w.routineName,
+    startedAt: w.startedAt,
+    finishedAt: w.finishedAt,
+    exercises: [...groups.values()],
+  }
+}
+
+/** Solo viajan las series completadas, numeradas por ejercicio. */
+export function toWorkoutInput(s: Session): WorkoutInput {
+  return {
+    id: s.id,
+    routineId: s.routineId === '' ? null : s.routineId,
+    routineName: s.routineName,
+    startedAt: s.startedAt,
+    finishedAt: s.finishedAt,
+    sets: s.exercises.flatMap((e) =>
+      e.sets
+        .filter((x) => x.done)
+        .map((x, i) => ({ exerciseId: e.exerciseId, setNumber: i + 1, weightKg: x.weight, reps: x.reps, rpe: x.rpe ?? null })),
+    ),
+  }
 }

@@ -28,7 +28,7 @@ export default function AjustesPage() {
 
   const importData = async (file: File) => {
     const ok = gym.importJson(await file.text())
-    setMsg(ok ? { tone: 'success', text: 'Historial restaurado. Las rutinas y ejercicios del respaldo no se importan todavía.' } : { tone: 'error', text: 'Ese archivo no es un respaldo válido.' })
+    setMsg(ok ? { tone: 'success', text: 'Entrenamiento en curso restaurado. Rutinas, ejercicios e historial del respaldo no se importan todavía.' } : { tone: 'error', text: 'Ese archivo no es un respaldo válido.' })
     if (fileRef.current) fileRef.current.value = ''
   }
 
@@ -53,9 +53,8 @@ export default function AjustesPage() {
         <Card>
           <div className="space-y-4 p-4">
             <p className="text-sm text-muted-foreground">
-              Tus rutinas y ejercicios se guardan en la base de datos del servidor. El historial de entrenamientos todavía
-              vive solo en este dispositivo, en el navegador: si borrás los datos del navegador, se pierde. Descargá un
-              respaldo de vez en cuando.
+              Tus rutinas, ejercicios y entrenamientos se guardan en la base de datos del servidor. Solo el entrenamiento
+              en curso se guarda en este dispositivo, en el navegador. Podés descargar un respaldo cuando quieras.
             </p>
             <div className="flex flex-col gap-2 medium:flex-row">
               <Button variant="outline" onClick={exportData}>
@@ -82,7 +81,7 @@ export default function AjustesPage() {
 
         <Card>
           <div className="space-y-3 p-4">
-            <p className="text-sm text-muted-foreground">Borra el historial de entrenamientos de este dispositivo. Tus rutinas y ejercicios no se tocan.</p>
+            <p className="text-sm text-muted-foreground">Borra todo el historial de entrenamientos del servidor. Tus rutinas y ejercicios no se tocan.</p>
             <Button variant="destructive" onClick={() => setConfirmReset(true)}>
               <RotateCcw /> Borrar el historial
             </Button>
@@ -94,7 +93,7 @@ export default function AjustesPage() {
         open={confirmReset}
         destructive
         title="¿Borrar el historial?"
-        description="Se pierden los entrenamientos guardados en este dispositivo. Esto no se puede deshacer."
+        description="Se pierden todos los entrenamientos guardados. Esto no se puede deshacer."
         confirmLabel="Borrar historial"
         onCancel={() => setConfirmReset(false)}
         onConfirm={() => {

@@ -39,8 +39,8 @@ los componentes están en `components/ui`, el estado en `lib/store.ts`.
 ## Datos
 
 Rutinas y ejercicios se guardan en Postgres a través de `/api/*` (necesita `DATABASE_URL` y `pnpm db:migrate`; la
-migración `0002_seed.sql` carga el catálogo y las tres rutinas de ejemplo). El historial y el entrenamiento en curso
-siguen en `localStorage` (clave `gym:v1`) hasta que se muevan a la base. **Todo el acceso a datos pasa por
+migración `0002_seed.sql` carga el catálogo y las tres rutinas de ejemplo). Los entrenamientos terminados (series con RPE
+opcional) también van a Postgres (`/api/workouts`). Solo el entrenamiento en curso queda en `localStorage` (clave `gym:v1`). **Todo el acceso a datos pasa por
 `lib/store.ts`** (`useGym()` para leer y `gym.*` para escribir): carga con estado de error y reintento, cambios
 optimistas y guardado agrupado de la rutina que se edita.
 

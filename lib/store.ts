@@ -6,16 +6,16 @@ import { adaptToType, defaultExercise } from './routine-types'
 import { emptyState } from './seed'
 import { lastTime } from './stats'
 import { fromLegacyId } from './legacy-ids'
-import { toExercise, toRoutine, toRoutineInput } from './api-mappers'
+import { toExercise, toRoutine, toRoutineInput, toSession, toWorkoutInput } from './api-mappers'
 import { uuid } from './uuid'
-import { uid } from './utils'
 import type { ExerciseRecord } from './server/exercises'
 import type { RoutineRecord } from './server/routines'
+import type { WorkoutRecord } from './server/workouts'
 
 /**
- * Rutinas y ejercicios viven en Postgres (vía /api). El historial y el entrenamiento en curso siguen en
- * localStorage (`gym:v1`) hasta que T6 los mueva a la base. Toda la app habla con `gym.*` y `useGym()`.
- * `gym:v1` conserva sus `exercises` y `routines` originales sin tocar: los usa la importación única (T7).
+ * Rutinas, ejercicios y entrenamientos terminados viven en Postgres (vía /api). Solo el entrenamiento en curso
+ * (borrador) sigue en localStorage (`gym:v1`) para no perderlo al recargar. Toda la app habla con `gym.*` y `useGym()`.
+ * `gym:v1` conserva sus `exercises`, `routines` y `sessions` originales sin tocar: los usa la importación única (T7).
  */
 const KEY = 'gym:v1'
 const SYNC_DELAY_MS = 400
@@ -42,12 +42,6 @@ function isState(v: unknown): v is GymState {
   return !!s && Array.isArray(s.exercises) && Array.isArray(s.routines) && Array.isArray(s.sessions)
 }
 
-const migrateSession = (s: Session): Session => ({
-  ...s,
-  routineId: fromLegacyId(s.routineId),
-  exercises: s.exercises.map((e) => ({ ...e, exerciseId: fromLegacyId(e.exerciseId) })),
-})
-
 const migrateDraft = (d: Draft | null | undefined): Draft | null =>
   d ? { ...d, routineId: fromLegacyId(d.routineId), exercises: d.exercises.map((e) => ({ ...e, exerciseId: fromLegacyId(e.exerciseId) })) } : null
 
@@ -64,15 +58,15 @@ function readRaw(): GymState | null {
   return null
 }
 
-function readLocal(): Pick<GymState, 'sessions' | 'draft'> {
-  const raw = readRaw()
-  return { sessions: (raw?.sessions ?? []).map(migrateSession), draft: migrateDraft(raw?.draft) }
+function readLocal(): Pick<GymState, 'draft'> {
+  return { draft: migrateDraft(readRaw()?.draft) }
 }
 
-function writeLocal(sessions: Session[], draft: Draft | null) {
+/** Guarda solo el borrador; `exercises`, `routines` y `sessions` viejos quedan intactos para la importación. */
+function writeLocal(draft: Draft | null) {
   const raw = readRaw()
   try {
-    localStorage.setItem(KEY, JSON.stringify({ exercises: raw?.exercises ?? [], routines: raw?.routines ?? [], sessions, draft }))
+    localStorage.setItem(KEY, JSON.stringify({ exercises: raw?.exercises ?? [], routines: raw?.routines ?? [], sessions: raw?.sessions ?? [], draft }))
   } catch {
     /* sin espacio o bloqueado: la sesión sigue en memoria */
   }
@@ -94,12 +88,12 @@ function setSnap(patch: Partial<Snapshot>) {
 
 function setState(next: GymState, persist = false) {
   setSnap({ state: next })
-  if (persist) writeLocal(next.sessions, next.draft)
+  if (persist) writeLocal(next.draft)
 }
 
 /** Cambia rutinas/ejercicios en memoria; el guardado en el servidor lo programa quien llama. */
 const updateRemote = (fn: (s: GymState) => GymState) => setState(fn(getSnapshot().state))
-/** Cambia historial/entrenamiento en curso: se guarda en localStorage. */
+/** Cambia el borrador (y lo que deba verse ya en pantalla): el borrador se guarda en localStorage. */
 const updateLocal = (fn: (s: GymState) => GymState) => setState(fn(getSnapshot().state), true)
 
 /* ───────────── Servidor ───────────── */
@@ -132,11 +126,15 @@ async function load() {
   loading = true
   setSnap({ error: null })
   try {
-    const [exercises, routines] = await Promise.all([
+    const [exercises, routines, workouts] = await Promise.all([
       api<ExerciseRecord[]>('/api/exercises'),
       api<RoutineRecord[]>('/api/routines'),
+      api<WorkoutRecord[]>('/api/workouts'),
     ])
-    setSnap({ state: { ...getSnapshot().state, exercises: exercises.map(toExercise), routines: routines.map(toRoutine) }, hydrated: true })
+    setSnap({
+      state: { ...getSnapshot().state, exercises: exercises.map(toExercise), routines: routines.map(toRoutine), sessions: workouts.map(toSession) },
+      hydrated: true,
+    })
   } catch (e) {
     setSnap({ error: e instanceof Error ? e.message : 'No se pudieron cargar los datos.' })
   } finally {
@@ -354,7 +352,7 @@ export const gym = {
       .filter((e) => e.sets.length > 0)
     if (exercises.length === 0) return null
     const session: Session = {
-      id: uid(),
+      id: uuid(),
       routineId: draft.routineId,
       routineName: draft.routineName,
       startedAt: draft.startedAt,
@@ -362,12 +360,14 @@ export const gym = {
       exercises,
     }
     updateLocal((s) => ({ ...s, sessions: [session, ...s.sessions], draft: null }))
+    enqueue(() => api('/api/workouts', { method: 'POST', body: JSON.stringify(toWorkoutInput(session)) }))
     return session.id
   },
 
   /* Historial */
   deleteSession(id: string) {
-    updateLocal((s) => ({ ...s, sessions: s.sessions.filter((x) => x.id !== id) }))
+    updateRemote((s) => ({ ...s, sessions: s.sessions.filter((x) => x.id !== id) }))
+    enqueue(() => api(`/api/workouts/${id}`, { method: 'DELETE' }))
   },
 
   /* Datos */
@@ -375,21 +375,23 @@ export const gym = {
     return JSON.stringify(getSnapshot().state, null, 2)
   },
   /**
-   * Restaura el historial y el entrenamiento en curso de un respaldo. Las rutinas y ejercicios viven en el
-   * servidor y no se tocan (la importación a la base llega en T7). Devuelve false si el archivo no es válido.
+   * Restaura el entrenamiento en curso de un respaldo. Rutinas, ejercicios e historial viven en el servidor
+   * y no se tocan (la importación a la base llega en T7). Devuelve false si el archivo no es válido.
    */
   importJson(text: string): boolean {
     try {
       const parsed: unknown = JSON.parse(text)
       if (!isState(parsed)) return false
-      updateLocal((s) => ({ ...s, sessions: parsed.sessions.map(migrateSession), draft: migrateDraft(parsed.draft) }))
+      updateLocal((s) => ({ ...s, draft: migrateDraft(parsed.draft) }))
       return true
     } catch {
       return false
     }
   },
-  /** Borra el historial y el entrenamiento en curso de este dispositivo. Rutinas y ejercicios no se tocan. */
+  /** Borra todo el historial (en el servidor) y el entrenamiento en curso. Rutinas y ejercicios no se tocan. */
   reset() {
+    const ids = getSnapshot().state.sessions.map((x) => x.id)
     updateLocal((s) => ({ ...s, sessions: [], draft: null }))
+    for (const id of ids) enqueue(() => api(`/api/workouts/${id}`, { method: 'DELETE' }))
   },
 }

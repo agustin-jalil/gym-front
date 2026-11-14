@@ -152,7 +152,7 @@ async function insertDays(client: PoolClient, routineId: string, days: NewRoutin
   }
 }
 
-async function inTransaction<T>(pool: Pool, fn: (client: PoolClient) => Promise<T>): Promise<T> {
+export async function inTransaction<T>(pool: Pool, fn: (client: PoolClient) => Promise<T>): Promise<T> {
   const client = await pool.connect();
   try {
     await client.query("begin");
