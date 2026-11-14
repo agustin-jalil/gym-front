@@ -1,7 +1,8 @@
 'use client'
 
 import { useSyncExternalStore } from 'react'
-import type { Draft, Exercise, GymState, LoggedSet, MuscleGroup, Routine, RoutineExercise, Session } from './types'
+import type { Draft, Exercise, GymState, LoggedSet, MuscleGroup, Routine, RoutineExercise, RoutineType, Session } from './types'
+import { adaptToType, defaultExercise } from './routine-types'
 import { emptyState } from './seed'
 import { lastTime } from './stats'
 import { fromLegacyId } from './legacy-ids'
@@ -247,6 +248,9 @@ export const gym = {
   updateRoutine(id: string, patch: Partial<Omit<Routine, 'id' | 'createdAt'>>) {
     editRoutine(id, (r) => ({ ...r, ...patch }))
   },
+  setRoutineType(id: string, type: RoutineType) {
+    editRoutine(id, (r) => ({ ...r, type, exercises: r.exercises.map((e) => adaptToType(type, e)) }))
+  },
   deleteRoutine(id: string) {
     clearTimeout(pendingSync.get(id))
     pendingSync.delete(id)
@@ -258,8 +262,7 @@ export const gym = {
     enqueue(() => api(`/api/routines/${id}`, { method: 'DELETE' }))
   },
   addRoutineExercise(routineId: string, exerciseId: string) {
-    const item: RoutineExercise = { exerciseId, sets: 3, reps: 10, weight: 0, restSec: 90 }
-    editRoutine(routineId, (r) => ({ ...r, exercises: [...r.exercises, item] }))
+    editRoutine(routineId, (r) => ({ ...r, exercises: [...r.exercises, defaultExercise(r.type, exerciseId)] }))
   },
   updateRoutineExercise(routineId: string, index: number, patch: Partial<RoutineExercise>) {
     editRoutine(routineId, (r) => ({ ...r, exercises: r.exercises.map((e, i) => (i === index ? { ...e, ...patch } : e)) }))

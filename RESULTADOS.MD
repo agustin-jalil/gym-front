@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 3 | 4 | 0 | 2 | ~5 | NO DISPONIBLE | 2026-11-14 |
+| 4 | 5 | 0 | 2 | ~4 | NO DISPONIBLE | 2026-11-14 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -41,6 +41,22 @@ Reglas de escritura (para el agente):
 ```
 
 ## Sesiones
+
+### 2026-11-14 02:48 (UTC) · T5 · Tipo de rutina en el editor
+- Resultado: OK
+- Rama / PR: auto/v0.2
+- Qué hizo: `lib/routine-types.ts` (rangos de reps y descanso por tipo, `defaultExercise`, `adaptToType`), `gym.setRoutineType` en el store, selector accesible (`aria-pressed`) en `/rutinas/[id]` con el rango del tipo; los ejercicios nuevos nacen con los valores por defecto del tipo y al cambiar de tipo reps/descanso se llevan al nuevo rango (series y kg intactos).
+- Archivos tocados: lib/routine-types.ts, tests/routine-types.test.ts, lib/store.ts, app/rutinas/[id]/page.tsx, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm test: PASÓ (26 tests; los 6 nuevos se vieron fallar antes por módulo inexistente)
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ
+  - Contra Postgres real: NO VERIFICADO (no hay servidor Postgres en esta sesión; T5 no toca SQL, pero el guardado de `type` por la API no se probó de punta a punta). UI no probada en navegador.
+- Decisiones: la rutina guarda reps como un único valor (tope del rango) porque así lo hace el mapper de T4; el descanso por defecto es 120 s (hipertrofia) y 45 s (metabólico), puntos medios del rango.
+- Problemas / PREGUNTAS para el usuario: ninguno
+- Dependencias agregadas: ninguna
+- Tareas desbloqueadas / siguiente sugerida: T6 (T8, T10 también elegibles)
+- Tiempos: inicio 02:47 UTC / fin 02:50 UTC, ~3 min. Tiempo al 90 %: NO DISPONIBLE.
 
 <!-- Entradas nuevas arriba de esta línea, debajo del título. -->
 

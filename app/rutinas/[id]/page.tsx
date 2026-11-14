@@ -11,6 +11,8 @@ import { Field, Input, NativeSelect, NumField } from '@/components/ui/fields'
 import { EmptyState } from '@/components/ui/states'
 import { GymLoading } from '@/components/gym-loading'
 import { gym, useGym } from '@/lib/store'
+import { ROUTINE_TYPES } from '@/lib/routine-types'
+import type { RoutineType } from '@/lib/types'
 import { MUSCLES, WEEK, cn } from '@/lib/utils'
 
 export default function EditarRutinaPage({ params }: { params: Promise<{ id: string }> }) {
@@ -68,6 +70,33 @@ export default function EditarRutinaPage({ params }: { params: Promise<{ id: str
           <Field label="Nombre">
             <Input value={routine.name} maxLength={40} onChange={(e) => gym.updateRoutine(id, { name: e.target.value })} />
           </Field>
+
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium">Tipo de rutina</legend>
+            <div className="grid grid-cols-2 gap-1.5">
+              {(Object.keys(ROUTINE_TYPES) as RoutineType[]).map((t) => {
+                const on = routine.type === t
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => gym.setRoutineType(id, t)}
+                    className={cn(
+                      'min-h-11 rounded-md border px-2 text-sm font-bold transition-colors',
+                      on ? 'border-transparent bg-primary text-primary-foreground' : 'border-input bg-card hover:bg-accent',
+                    )}
+                  >
+                    {ROUTINE_TYPES[t].label}
+                  </button>
+                )
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {ROUTINE_TYPES[routine.type].repsMin}–{ROUTINE_TYPES[routine.type].repsMax} reps · descanso {ROUTINE_TYPES[routine.type].restMin}–
+              {ROUTINE_TYPES[routine.type].restMax} s
+            </p>
+          </fieldset>
 
           <fieldset className="space-y-2">
             <legend className="text-sm font-medium">Días que entrenás</legend>
