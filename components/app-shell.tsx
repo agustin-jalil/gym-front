@@ -36,6 +36,8 @@ const isActive = (pathname: string, href: string) => (href === '/' ? pathname ==
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
+  if (pathname.startsWith('/acceso')) return <main className="min-h-dvh">{children}</main>
+
   if (pathname.startsWith('/entrenar')) return (
       <main className="min-h-dvh">
         <SyncErrorBanner />

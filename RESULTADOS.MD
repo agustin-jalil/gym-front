@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 7 | 11 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
+| 7 | 12 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -41,6 +41,29 @@ Reglas de escritura (para el agente):
 ```
 
 ## Sesiones
+
+### 2026-11-14 06:57 (UTC) · T13 · Acceso protegido
+- Resultado: OK con salvedades
+- Rama / PR: auto/v0.2 · borrador existente
+- Qué hizo: `lib/auth.ts` (hash de la clave, comparación sin corte temprano, decisión de acceso, `safeNext`) con 7 tests escritos primero (vistos en rojo por módulo inexistente); `proxy.ts` (según `node_modules/next/dist/docs`, `proxy` reemplaza a `middleware`) que protege pantallas y API; `/acceso` (formulario) y `/api/acceso` (POST login con cookie httpOnly/SameSite=Lax, DELETE logout); `.env.example` y README.
+- Archivos tocados: lib/auth.ts, proxy.ts, app/acceso/page.tsx, app/api/acceso/route.ts, components/app-shell.tsx, tests/auth.test.ts, .env.example, README.md, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ (`Proxy (Middleware)` listado)
+  - node --test: PASÓ (134 tests, con DATABASE_URL)
+  - Contra Postgres real: SÍ. Con `next start` y curl: API sin cookie 401; página sin cookie 307 a `/acceso?next=…`; Bearer correcto 200 / incorrecto 401; login mal 401, login bien 200 con cookie HttpOnly; con cookie API 200 y página 200; `/acceso` y manifest sin credenciales 200; sin `APP_SECRET` en producción 503. Playwright: redirección, clave mala, clave buena y vuelta a la página pedida.
+  - NO VERIFICADO: cookie `Secure` detrás de HTTPS real; comportamiento en `next dev` (sin secreto queda abierto); medium/expanded de `/acceso`.
+- Decisiones tomadas y por qué:
+  - Falla cerrado en producción sin `APP_SECRET` (503); abierto en desarrollo para no estorbar.
+  - La cookie guarda SHA-256 de la clave (no la clave); cambiar el secreto invalida sesiones.
+  - Sin dependencias nuevas (solo Web Crypto).
+- Problemas / PREGUNTAS para el usuario:
+  - PREGUNTA: no hay límite de intentos en `/api/acceso` (fuerza bruta); con una clave larga y aleatoria alcanza, pero conviene limitar en el proxy/host si se expone a Internet. No se agregó para no sumar estado en servidor.
+  - No hay botón de "Cerrar sesión" en la UI (solo `DELETE /api/acceso`); se dejó para T14.
+- Dependencias agregadas: ninguna
+- Tareas que quedaron desbloqueadas / siguiente sugerida: T12; luego T14
+- Esfuerzo: ~20 comandos, 0 reintentos de verificación.
+- Tiempos: fin 06:57 UTC (de `date -u`); inicio ~06:57 UTC. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 06:55 (UTC) · T11 · Carga sugerida en /entrenar/[id]
 - Resultado: OK con salvedades

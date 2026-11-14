@@ -19,6 +19,14 @@ PostgreSQL, accedido solo desde código de servidor (`lib/server/db.ts`, `server
 y completá `DATABASE_URL`. `pnpm db:migrate` crea el esquema desde cero y es idempotente (registra lo aplicado en
 `schema_migrations`). Las migraciones viven en `db/migrations/` y se aplican en orden alfabético.
 
+## Acceso protegido
+
+Todas las pantallas y la API exigen la clave `APP_SECRET` (definila en `.env.local` o en el entorno del servidor;
+generá una larga y aleatoria). `proxy.ts` redirige las pantallas a `/acceso` y responde 401 a la API sin credenciales;
+iniciar sesión guarda una cookie `httpOnly` (30 días) con el hash de la clave. Para scripts: `Authorization: Bearer <clave>`.
+En producción, **sin `APP_SECRET` todo responde 503** (falla cerrado); en desarrollo, sin la variable la app queda abierta.
+Cambiar `APP_SECRET` invalida las sesiones abiertas. `DELETE /api/acceso` cierra la sesión.
+
 ## Stack
 
 Next.js 16 (App Router) · React 19 · TypeScript estricto · Tailwind CSS v4. Sin librerías de UI ni de estado:

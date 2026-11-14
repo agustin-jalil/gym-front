@@ -105,7 +105,7 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 - [x] T10 · **`lib/progression.ts`:** lógica pura de cargas según `VERSIONES.MD`, con tests `node --test` que cubran las reglas y todos los casos borde. Script `pnpm test`. · depende: nada
 - [x] T11 · **Carga sugerida en `/entrenar/[id]`:** mostrar sugerencia y explicación por ejercicio usando el historial real, permitir aceptar o ajustar, guardar RPE. · depende: T6, T10
 - [ ] T12 · **`/progreso`:** evolución de cargas por ejercicio y de medidas en el tiempo. · depende: T9, T11
-- [ ] T13 · **Acceso protegido:** secreto por variable de entorno (middleware/proxy según la doc de esta versión) para todas las pantallas y la API. · depende: T4
+- [x] T13 · **Acceso protegido:** secreto por variable de entorno (middleware/proxy según la doc de esta versión) para todas las pantallas y la API. · depende: T4
 - [ ] T14 · **Pulido final:** estados vacíos/carga/error consistentes, revisión de layout en compact/medium/expanded, accesibilidad básica, README completo. · depende: T12, T13
 
 ## Backlog v0.3
@@ -134,3 +134,4 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 2026-11-14 03:10 · T8 · OK
 2026-11-14 06:53 · T9 · OK
 2026-11-14 06:55 · T11 · OK
+2026-11-14 06:57 · T13 · OK
