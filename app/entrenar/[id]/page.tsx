@@ -7,10 +7,13 @@ import { PageContainer } from '@/components/page'
 import { Card } from '@/components/ui/card'
 import { Button, ButtonLink } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { NumField } from '@/components/ui/fields'
-import { EmptyState, LoadingState } from '@/components/ui/states'
+import { NativeSelect, NumField } from '@/components/ui/fields'
+import { EmptyState } from '@/components/ui/states'
+import { GymLoading } from '@/components/gym-loading'
 import { gym, useGym } from '@/lib/store'
 import { lastTime } from '@/lib/stats'
+import { suggestionFor } from '@/lib/suggestions'
+import type { Suggestion } from '@/lib/progression'
 import { cn, formatClock, formatDuration, formatKg } from '@/lib/utils'
 
 /** Reloj que se actualiza solo (para el tiempo transcurrido y el descanso). */
@@ -31,6 +34,7 @@ export default function EntrenarPage({ params }: { params: Promise<{ id: string 
   const [rest, setRest] = useState<{ end: number; total: number } | null>(null)
   const [confirm, setConfirm] = useState<'discard' | null>(null)
   const leaving = useRef(false)
+  const [applied, setApplied] = useState<Record<number, boolean>>({})
 
   const routine = g.routines.find((r) => r.id === id)
   const draft = g.draft
@@ -61,7 +65,7 @@ export default function EntrenarPage({ params }: { params: Promise<{ id: string 
   if (!g.hydrated)
     return (
       <PageContainer size="sm">
-        <LoadingState />
+        <GymLoading />
       </PageContainer>
     )
 
@@ -99,7 +103,7 @@ export default function EntrenarPage({ params }: { params: Promise<{ id: string 
   if (!draft)
     return (
       <PageContainer size="sm">
-        <LoadingState />
+        <GymLoading />
       </PageContainer>
     )
 
@@ -173,6 +177,8 @@ export default function EntrenarPage({ params }: { params: Promise<{ id: string 
         {draft.exercises.map((le, ei) => {
           const ex = g.exercises.find((e) => e.id === le.exerciseId)
           const prev = lastTime(g.sessions, le.exerciseId)
+          const planned = routine.exercises.find((x) => x.exerciseId === le.exerciseId)?.sets ?? le.sets.length
+          const suggestion = suggestionFor(g.sessions, le.exerciseId, routine.type, planned)
           return (
             <Card key={`${le.exerciseId}-${ei}`}>
               <div className="space-y-3 p-4">
@@ -187,11 +193,27 @@ export default function EntrenarPage({ params }: { params: Promise<{ id: string 
                   )}
                 </div>
 
-                <div className="grid grid-cols-[2rem_1fr_1fr_2.75rem] items-center gap-x-2 gap-y-2">
+                <SuggestionBox
+                  suggestion={suggestion}
+                  applied={applied[ei] === true}
+                  onAccept={() => {
+                    le.sets.forEach((set, si) => {
+                      if (set.done) return
+                      gym.updateSet(ei, si, {
+                        reps: suggestion.reps,
+                        ...(suggestion.weight === null ? {} : { weight: suggestion.weight }),
+                      })
+                    })
+                    setApplied((a) => ({ ...a, [ei]: true }))
+                  }}
+                />
+
+                <div className="grid grid-cols-[2rem_1fr_1fr_4.75rem_2.75rem] items-center gap-x-2 gap-y-2">
                   <span className="text-xs font-medium text-muted-foreground">Serie</span>
                   <span className="text-center text-xs font-medium text-muted-foreground">Kg</span>
                   <span className="text-center text-xs font-medium text-muted-foreground">Reps</span>
-                  <span className="sr-only">Hecha</span>
+                  <span className="text-center text-xs font-medium text-muted-foreground">RPE</span>
+                  <span aria-hidden="true" />
 
                   {le.sets.map((set, si) => (
                     <SetRow
@@ -200,6 +222,7 @@ export default function EntrenarPage({ params }: { params: Promise<{ id: string 
                       set={set}
                       onWeight={(n) => gym.updateSet(ei, si, { weight: n })}
                       onReps={(n) => gym.updateSet(ei, si, { reps: Math.max(0, Math.round(n)) })}
+                      onRpe={(rpe) => gym.updateSet(ei, si, { rpe })}
                       onToggle={() => {
                         gym.updateSet(ei, si, { done: !set.done })
                         if (!set.done && le.restSec > 0) setRest({ end: Date.now() + le.restSec * 1000, total: le.restSec })
@@ -248,12 +271,14 @@ function SetRow({
   set,
   onWeight,
   onReps,
+  onRpe,
   onToggle,
 }: {
   index: number
-  set: { reps: number; weight: number; done: boolean }
+  set: { reps: number; weight: number; done: boolean; rpe?: number }
   onWeight: (n: number) => void
   onReps: (n: number) => void
+  onRpe: (rpe: number | undefined) => void
   onToggle: () => void
 }) {
   return (
@@ -261,6 +286,19 @@ function SetRow({
       <span className={cn('text-sm font-bold', set.done ? 'text-primary' : 'text-muted-foreground')}>{index + 1}</span>
       <NumField value={set.weight} onChange={onWeight} aria-label={`Serie ${index + 1}: kilos`} className={set.done ? 'border-primary/40 bg-primary/10' : undefined} />
       <NumField value={set.reps} onChange={onReps} aria-label={`Serie ${index + 1}: repeticiones`} className={set.done ? 'border-primary/40 bg-primary/10' : undefined} />
+      <NativeSelect
+        aria-label={`Serie ${index + 1}: RPE (opcional)`}
+        value={set.rpe === undefined ? '' : String(set.rpe)}
+        onChange={(e) => onRpe(e.target.value === '' ? undefined : Number(e.target.value))}
+        className="px-2 pr-6 text-center"
+      >
+        <option value="">—</option>
+        {RPE_OPTIONS.map((r) => (
+          <option key={r} value={r}>
+            {String(r).replace('.', ',')}
+          </option>
+        ))}
+      </NativeSelect>
       <button
         type="button"
         aria-pressed={set.done}
@@ -276,5 +314,29 @@ function SetRow({
         <Check className="size-5" />
       </button>
     </>
+  )
+}
+
+const RPE_OPTIONS = [5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10]
+
+/** Carga sugerida con su explicación. Aceptarla completa las series pendientes; igual se puede ajustar a mano. */
+function SuggestionBox({ suggestion, applied, onAccept }: { suggestion: Suggestion; applied: boolean; onAccept: () => void }) {
+  const head =
+    suggestion.weight === null
+      ? `Sugerido: ${suggestion.reps} reps`
+      : `Sugerido: ${formatKg(suggestion.weight)} kg × ${suggestion.reps}`
+  return (
+    <div className="space-y-2 rounded-xl border border-primary/30 bg-primary/8 p-3">
+      <p className="text-sm font-semibold">
+        {head}
+        {suggestion.restSec ? ` · descanso ${suggestion.restSec} s` : ''}
+      </p>
+      <p className="text-xs text-muted-foreground">{suggestion.reason}</p>
+      {suggestion.weight === null ? null : (
+        <Button variant="outline" size="sm" disabled={applied} onClick={onAccept}>
+          {applied ? 'Aplicada a las series pendientes' : 'Aceptar sugerencia'}
+        </Button>
+      )}
+    </div>
   )
 }

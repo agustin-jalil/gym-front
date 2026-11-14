@@ -17,7 +17,7 @@ Archivos del sistema:
 > Valores: `PLANIFICADA` | `EN CURSO` | `BLOQUEADA` | `COMPLETA`. El orden de la lista es el orden de ejecución.
 > `COMPLETA` en la rama de la versión significa "lista para que el usuario mergee".
 
-- v0.2: EN CURSO
+- v0.2: COMPLETA
 - v0.3: PLANIFICADA
 - v0.4: PLANIFICADA (sin backlog: no se empieza)
 
@@ -94,19 +94,19 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 > Formato: `- [ ] Tn · descripción · depende: Tx`. El orden es la prioridad. El detalle de reglas está en `VERSIONES.MD`.
 
 - [x] T1 · **Capa de base de datos:** agregar `pg`, `lib/server/db.ts` (pool, `server-only`, `DATABASE_URL`), runner `pnpm db:migrate` y `db/migrations/0001_init.sql` con el modelo de datos mínimo de `VERSIONES.MD`. Crear `.env.example`. Documentar en README.
-- [ ] T2 · **Repositorios de servidor:** funciones en `lib/server/` para ejercicios, rutinas (con `type`), días y ejercicios de rutina. Sin UI todavía. · depende: T1
-- [ ] T3 · **API en Next** (route handlers o server actions según la doc de esta versión) para CRUD de rutinas y ejercicios, con validación de entrada y errores claros. · depende: T2
-- [ ] T4 · **Migrar `lib/store.ts`** para que `useGym()` y `gym.*` lean/escriban vía la API, manteniendo la misma interfaz pública y estados de carga/error en las pantallas. · depende: T3
-- [ ] T5 · **Tipo de rutina en el editor** (`/rutinas/[id]`): selector hipertrofia / estrés metabólico, con rangos de reps y descanso por defecto según tipo. · depende: T4
-- [ ] T6 · **Entrenamientos y series en Postgres:** repositorios, API y conexión de `/entrenar/[id]`, `/historial` y la pantalla de inicio. Agregar RPE opcional por serie. · depende: T4
-- [ ] T7 · **Importar datos locales:** botón en `/ajustes` que lleva el contenido de `gym:v1` a la base, una sola vez y sin duplicar. · depende: T6
-- [ ] T8 · **Medidas corporales (back):** tabla, repositorio y API de `body_measurements` (cm). · depende: T1
-- [ ] T9 · **Medidas corporales (front):** pantalla `/medidas` con formulario, edición, historial y variación en cm respecto de la medición anterior; entrada en la navegación. · depende: T8
-- [ ] T10 · **`lib/progression.ts`:** lógica pura de cargas según `VERSIONES.MD`, con tests `node --test` que cubran las reglas y todos los casos borde. Script `pnpm test`. · depende: nada
-- [ ] T11 · **Carga sugerida en `/entrenar/[id]`:** mostrar sugerencia y explicación por ejercicio usando el historial real, permitir aceptar o ajustar, guardar RPE. · depende: T6, T10
-- [ ] T12 · **`/progreso`:** evolución de cargas por ejercicio y de medidas en el tiempo. · depende: T9, T11
-- [ ] T13 · **Acceso protegido:** secreto por variable de entorno (middleware/proxy según la doc de esta versión) para todas las pantallas y la API. · depende: T4
-- [ ] T14 · **Pulido final:** estados vacíos/carga/error consistentes, revisión de layout en compact/medium/expanded, accesibilidad básica, README completo. · depende: T12, T13
+- [x] T2 · **Repositorios de servidor:** funciones en `lib/server/` para ejercicios, rutinas (con `type`), días y ejercicios de rutina. Sin UI todavía. · depende: T1
+- [x] T3 · **API en Next** (route handlers o server actions según la doc de esta versión) para CRUD de rutinas y ejercicios, con validación de entrada y errores claros. · depende: T2
+- [x] T4 · **Migrar `lib/store.ts`** para que `useGym()` y `gym.*` lean/escriban vía la API, manteniendo la misma interfaz pública y estados de carga/error en las pantallas. · depende: T3
+- [x] T5 · **Tipo de rutina en el editor** (`/rutinas/[id]`): selector hipertrofia / estrés metabólico, con rangos de reps y descanso por defecto según tipo. · depende: T4
+- [x] T6 · **Entrenamientos y series en Postgres:** repositorios, API y conexión de `/entrenar/[id]`, `/historial` y la pantalla de inicio. Agregar RPE opcional por serie. · depende: T4
+- [x] T7 · **Importar datos locales:** botón en `/ajustes` que lleva el contenido de `gym:v1` a la base, una sola vez y sin duplicar. · depende: T6
+- [x] T8 · **Medidas corporales (back):** tabla, repositorio y API de `body_measurements` (cm). · depende: T1
+- [x] T9 · **Medidas corporales (front):** pantalla `/medidas` con formulario, edición, historial y variación en cm respecto de la medición anterior; entrada en la navegación. · depende: T8
+- [x] T10 · **`lib/progression.ts`:** lógica pura de cargas según `VERSIONES.MD`, con tests `node --test` que cubran las reglas y todos los casos borde. Script `pnpm test`. · depende: nada
+- [x] T11 · **Carga sugerida en `/entrenar/[id]`:** mostrar sugerencia y explicación por ejercicio usando el historial real, permitir aceptar o ajustar, guardar RPE. · depende: T6, T10
+- [x] T12 · **`/progreso`:** evolución de cargas por ejercicio y de medidas en el tiempo. · depende: T9, T11
+- [x] T13 · **Acceso protegido:** secreto por variable de entorno (middleware/proxy según la doc de esta versión) para todas las pantallas y la API. · depende: T4
+- [x] T14 · **Pulido final:** estados vacíos/carga/error consistentes, revisión de layout en compact/medium/expanded, accesibilidad básica, README completo. · depende: T12, T13
 
 ## Backlog v0.3
 
@@ -122,3 +122,18 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 
 <!-- Una línea por tarea cerrada: AAAA-MM-DD HH:MM · Tn · OK/BLOQUEADA (detalle en RESULTADOS.MD) -->
 2026-11-13 21:48 · T1 · OK
+2026-11-14 04:55 · T6 · OK
+2026-11-14 05:10 · T7 · OK
+2026-11-13 22:52 · T2 · OK
+2026-11-13 22:52 · T3 · OK
+2026-11-14 00:53 · T4 · OK
+2026-11-13 22:49 · T2 · OK
+2026-11-13 22:51 · T3 · OK
+2026-11-14 02:50 · T5 · OK
+2026-11-14 03:00 · T10 · OK
+2026-11-14 03:10 · T8 · OK
+2026-11-14 06:53 · T9 · OK
+2026-11-14 06:55 · T11 · OK
+2026-11-14 06:57 · T13 · OK
+2026-11-14 08:51 · T12 · OK
+2026-11-14 08:58 · T14 · OK

@@ -1,16 +1,108 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import { TrendingUp } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Ruler, TrendingUp } from 'lucide-react'
 import { PageContainer, PageHeader, SectionHeader } from '@/components/page'
 import { BarChart, LineChart } from '@/components/charts'
 import { Card } from '@/components/ui/card'
 import { ButtonLink } from '@/components/ui/button'
 import { Field, NativeSelect } from '@/components/ui/fields'
 import { EmptyState, LoadingState, StatCard } from '@/components/ui/states'
+import { Alert } from '@/components/alert'
+import { Button } from '@/components/ui/button'
+import { GymLoading } from '@/components/gym-loading'
 import { useGym } from '@/lib/store'
 import { exerciseHistory, weeklyVolume } from '@/lib/stats'
 import { dateShort, formatKg } from '@/lib/utils'
+import type { MeasurementField } from '@/lib/measurements'
+import {
+  fieldsWithData,
+  formatDelta,
+  MEASUREMENT_LABELS,
+  measurementSeries,
+  unitOf,
+  type MeasurementEntry,
+} from '@/lib/measurement-history'
+
+const dayUtc = (d: string) =>
+  new Intl.DateTimeFormat('es-AR', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(d))
+
+function MeasurementsProgress() {
+  const [entries, setEntries] = useState<MeasurementEntry[] | null>(null)
+  const [error, setError] = useState('')
+  const [chosen, setChosen] = useState<MeasurementField | ''>('')
+
+  const load = useCallback(async () => {
+    setError('')
+    try {
+      const res = await fetch('/api/measurements')
+      if (!res.ok) throw new Error()
+      setEntries((await res.json()) as MeasurementEntry[])
+    } catch {
+      setError('No se pudieron cargar las medidas.')
+    }
+  }, [])
+
+  useEffect(() => {
+    void load()
+  }, [load])
+
+  const fields = useMemo(() => fieldsWithData(entries ?? []), [entries])
+  const field = fields.find((f) => f === chosen) ?? fields[0]
+  const series = useMemo(() => (field && entries ? measurementSeries(entries, field) : []), [entries, field])
+
+  return (
+    <section className="space-y-3">
+      <SectionHeader title="Medidas corporales" />
+      {error ? (
+        <Alert tone="error">
+          <div className="flex flex-wrap items-center gap-3">
+            <span>{error}</span>
+            <Button variant="outline" size="sm" onClick={() => void load()}>
+              Reintentar
+            </Button>
+          </div>
+        </Alert>
+      ) : entries === null ? (
+        <LoadingState rows={1} />
+      ) : !field ? (
+        <EmptyState
+          icon={<Ruler />}
+          title="Aún no cargaste medidas"
+          description="Registrá tu primera medición para ver cómo cambia tu cuerpo."
+          action={<ButtonLink href="/medidas">Ir a medidas</ButtonLink>}
+        />
+      ) : (
+        <>
+          <Field label="Medida" className="medium:max-w-sm">
+            <NativeSelect value={field} onChange={(e) => setChosen(e.target.value as MeasurementField)}>
+              {fields.map((f) => (
+                <option key={f} value={f}>
+                  {MEASUREMENT_LABELS[f]}
+                </option>
+              ))}
+            </NativeSelect>
+          </Field>
+          <Card>
+            <div className="space-y-2 p-4">
+              <LineChart
+                label={MEASUREMENT_LABELS[field]}
+                unit={unitOf(field)}
+                points={series.map((p) => ({ label: dayUtc(p.measuredOn), value: p.value }))}
+              />
+              <p className="text-sm text-muted-foreground">
+                {series.length > 1
+                  ? `Cambio desde la primera medición: ${formatDelta(Math.round((series[series.length - 1].value - series[0].value) * 10) / 10, unitOf(field))}`
+                  : 'Necesitás 2 mediciones para ver el cambio.'}
+              </p>
+            </div>
+          </Card>
+        </>
+      )}
+    </section>
+  )
+}
+
 
 export default function ProgresoPage() {
   const g = useGym()
@@ -25,7 +117,7 @@ export default function ProgresoPage() {
   if (!g.hydrated)
     return (
       <PageContainer>
-        <LoadingState />
+        <GymLoading />
       </PageContainer>
     )
 
@@ -98,6 +190,8 @@ export default function ProgresoPage() {
           </div>
         </Card>
       </section>
+
+      <MeasurementsProgress />
     </PageContainer>
   )
 }

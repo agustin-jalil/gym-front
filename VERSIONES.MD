@@ -14,7 +14,7 @@ y ajustes. Datos en `localStorage` (clave `gym:v1`) vía `lib/store.ts`.
 
 ---
 
-## v0.2 — Backend en Next + Postgres, medidas corporales y manejo de cargas · ACTUAL
+## v0.2 — Backend en Next + Postgres, medidas corporales y manejo de cargas · COMPLETA
 
 ### Objetivo
 
@@ -27,6 +27,9 @@ Llevar el progreso real del usuario: guardar todo en **PostgreSQL**, registrar *
   según lo que indique `node_modules/next/dist/docs/`). Ningún servicio aparte.
 - Acceso a Postgres solo desde código de servidor (`server-only`), con `DATABASE_URL` por variable de entorno.
   Nunca commitear `.env`; mantener `.env.example`.
+- 2026-11-13 · T2 · Repositorios de servidor de ejercicios y rutinas.
+- 2026-11-13 · T3 · API `/api/exercises` y `/api/routines` con validación.
+- 2026-11-14 · T4 · `lib/store.ts` lee/escribe rutinas y ejercicios vía API (misma interfaz), migración 0002 con semillas, estados de carga/error.
 - Migraciones SQL versionadas en `db/migrations/` con un runner propio chico (`pnpm db:migrate`).
 - Driver: `pg` (única dependencia nueva permitida sin pedir permiso). Sin ORM.
 - Las pantallas siguen usando `useGym()` / `gym.*`: la interfaz de `lib/store.ts` se mantiene y su implementación pasa a hablar con el servidor.
@@ -59,23 +62,34 @@ Casos borde obligatorios: ejercicio sin historial (primera carga la ingresa el u
 
 ### Definición de versión completa
 
-- [ ] `pnpm typecheck` y `pnpm build` pasan en `main`.
-- [ ] La app corre contra Postgres con `DATABASE_URL`; `pnpm db:migrate` crea todo desde cero.
-- [ ] Rutinas, entrenamientos y series se guardan y se leen de Postgres; ya no dependen de `localStorage`.
-- [ ] Existe importación única de los datos viejos de `localStorage` (`gym:v1`) hacia la base.
-- [ ] Se pueden crear rutinas de tipo hipertrofia y de estrés metabólico desde el editor.
-- [ ] Pantalla de medidas: alta, edición, historial y variación en cm entre mediciones.
-- [ ] `/entrenar/[id]` muestra la carga sugerida con su explicación, permite aceptarla o ajustarla y guarda RPE opcional.
-- [ ] `lib/progression.ts` cubre las reglas de arriba con tests (`node --test`) que pasan, incluidos los casos borde.
-- [ ] `/progreso` muestra evolución de cargas y de medidas.
-- [ ] Protección de acceso simple (secreto por variable de entorno) antes de exponer la app.
-- [ ] README documenta variables de entorno, migraciones y cómo correr todo.
+- [x] `pnpm typecheck` y `pnpm build` pasan en `main`.
+- [x] La app corre contra Postgres con `DATABASE_URL`; `pnpm db:migrate` crea todo desde cero.
+- [x] Rutinas, entrenamientos y series se guardan y se leen de Postgres; ya no dependen de `localStorage`.
+- [x] Existe importación única de los datos viejos de `localStorage` (`gym:v1`) hacia la base.
+- [x] Se pueden crear rutinas de tipo hipertrofia y de estrés metabólico desde el editor.
+- [x] Pantalla de medidas: alta, edición, historial y variación en cm entre mediciones.
+- [x] `/entrenar/[id]` muestra la carga sugerida con su explicación, permite aceptarla o ajustarla y guarda RPE opcional.
+- [x] `lib/progression.ts` cubre las reglas de arriba con tests (`node --test`) que pasan, incluidos los casos borde.
+- [x] `/progreso` muestra evolución de cargas y de medidas.
+- [x] Protección de acceso simple (secreto por variable de entorno) antes de exponer la app.
+- [x] README documenta variables de entorno, migraciones y cómo correr todo.
 
 ### Cambios de la versión
 
 <!-- El autopilot agrega una línea por tarea mergeada: AAAA-MM-DD · Tn · resumen -->
 
+- 2026-11-14 · T7 · Importación única de `gym:v1` a la base: `POST /api/import` idempotente (ids deterministas), `lib/legacy-import.ts`, botón en `/ajustes`.
+- 2026-11-14 · T6 · Entrenamientos y series en Postgres: `/api/workouts`, `lib/workouts.ts`, repositorio, migración 0003 (`routine_name`), RPE opcional por serie; `store` lee/escribe vía API.
 - 2026-11-13 · T1 · Capa de base de datos: `pg`, `lib/server/db.ts`, `pnpm db:migrate`, `0001_init.sql`, `.env.example`.
+- 2026-11-13 · T2 · Repositorios de servidor (`lib/server/exercises.ts`, `routines.ts`) con tests contra Postgres; script `pnpm test`.
+- 2026-11-14 · T5 · Tipo de rutina en el editor: selector hipertrofia / estrés metabólico, rangos y descanso por defecto (`lib/routine-types.ts`).
+- 2026-11-14 · T10 · `lib/progression.ts`: carga sugerida (progresión doble, estrés metabólico, deload, casos borde) con 30 tests `node --test`.
+- 2026-11-14 · T13 · Acceso protegido: `proxy.ts` exige `APP_SECRET` (cookie httpOnly o Bearer) en pantallas y API, `/acceso`, `lib/auth.ts`; sin secreto en producción responde 503.
+- 2026-11-14 · T12 · `/progreso`: sección de medidas corporales (evolución por medida y cambio en cm) junto a la evolución de cargas; `measurementSeries` y `fieldsWithData` en `lib/measurement-history.ts`.
+- 2026-11-14 · T14 · Pulido final: revisión de estados, layout (390/700/1100 px sin desborde) y labels; README con variables de entorno, tests, medidas y carga sugerida.
+- 2026-11-14 · T11 · Carga sugerida en `/entrenar/[id]`: `lib/suggestions.ts` arma el historial real y llama a `suggestLoad`; caja con sugerencia y explicación, "Aceptar sugerencia" y RPE opcional por serie.
+- 2026-11-14 · T9 · Medidas corporales (front): pantalla `/medidas` (alta, edición, borrado, historial, variación por campo), `lib/measurement-history.ts`, entrada en la navegación.
+- 2026-11-14 · T8 · Medidas corporales (back): `lib/measurements.ts` (validación), `lib/server/measurements.ts` (repositorio) y API `/api/measurements`.
 
 ---
 

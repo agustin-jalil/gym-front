@@ -1,9 +1,10 @@
 'use client'
 
+import { SyncErrorBanner } from '@/components/gym-loading'
 import * as React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ClipboardList, Dumbbell, History, Home, Settings, TrendingUp } from 'lucide-react'
+import { ClipboardList, Dumbbell, History, Home, Ruler, Settings, TrendingUp } from 'lucide-react'
 import { APP_NAME } from '@/lib/app'
 import { cn } from '@/lib/utils'
 
@@ -21,6 +22,7 @@ const DESTINATIONS: Destination[] = [
   { href: '/rutinas', label: 'Rutinas', icon: ClipboardList, bottom: true },
   { href: '/ejercicios', label: 'Ejercicios', icon: Dumbbell },
   { href: '/historial', label: 'Historial', icon: History, bottom: true },
+  { href: '/medidas', label: 'Medidas', icon: Ruler },
   { href: '/progreso', label: 'Progreso', icon: TrendingUp, bottom: true },
   { href: '/ajustes', label: 'Ajustes', icon: Settings, bottom: true },
 ]
@@ -34,7 +36,14 @@ const isActive = (pathname: string, href: string) => (href === '/' ? pathname ==
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
-  if (pathname.startsWith('/entrenar')) return <main className="min-h-dvh">{children}</main>
+  if (pathname.startsWith('/acceso')) return <main className="min-h-dvh">{children}</main>
+
+  if (pathname.startsWith('/entrenar')) return (
+      <main className="min-h-dvh">
+        <SyncErrorBanner />
+        {children}
+      </main>
+    )
 
   return (
     <>
@@ -74,6 +83,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <main className="min-h-dvh pb-[calc(4.5rem+env(safe-area-inset-bottom))] medium:pb-0 medium:pl-[72px] expanded:pl-60">
+        <SyncErrorBanner />
         {children}
       </main>
 
