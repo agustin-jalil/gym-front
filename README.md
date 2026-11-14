@@ -56,6 +56,7 @@ los componentes están en `components/ui`, el estado en `lib/store.ts`.
 | `/progreso` | Volumen semanal, evolución de cargas por ejercicio y evolución de medidas corporales |
 | `/ejercicios` | Catálogo, con ejercicios propios |
 | `/ajustes` | Tema, respaldo y restauración de datos |
+| `/autopilot` | Panel de solo lectura del trabajo automático: estado de cada versión, progreso por tareas y últimas sesiones |
 
 ## Datos
 
@@ -66,6 +67,17 @@ Los datos viejos de `gym:v1` se llevan a la base con el botón «Importar datos 
 (`POST /api/import`): es idempotente, no duplica y no borra nada del navegador. **Todo el acceso a datos pasa por
 `lib/store.ts`** (`useGym()` para leer y `gym.*` para escribir): carga con estado de error y reintento, cambios
 optimistas y guardado agrupado de la rutina que se edita.
+
+## Panel del autopilot
+
+`/autopilot` muestra, sin abrir GitHub, cómo avanza el trabajo automático: el estado de cada versión con una barra de progreso
+(tareas hechas / totales), la lista de tareas con su estado (hecha, lista, espera dependencias, bloqueada) y dependencias, y las
+últimas 10 sesiones (fecha, resultado, duración, tiempo al 90 %, typecheck/build/tests) con un gráfico de duración.
+
+Los datos salen de los archivos de la raíz del proyecto: `RUTINA.MD` (estado de versiones y backlogs), `RESULTADOS.MD` (sesiones) y
+`VERSIONES.MD` (debe existir). Se leen en el servidor en cada pedido (`lib/server/autopilot-files.ts`) y se interpretan con
+`lib/autopilot.ts` (lógica pura, con tests). Es solo lectura: la pantalla nunca escribe esos archivos. Si falta uno, está vacío o
+su formato cambió, se muestra un error claro en la pantalla en vez de romperla. Como cualquier otra pantalla, exige `APP_SECRET`.
 
 ## Carga sugerida
 

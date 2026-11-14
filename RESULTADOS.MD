@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 8 | 14 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
+| 10 | 19 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -41,6 +41,41 @@ Reglas de escritura (para el agente):
 ```
 
 ## Sesiones
+
+### 2026-11-14 10:47 (UTC) · T16, T17, T18, T19 · Pantalla /autopilot y cierre de v0.3
+- Resultado: OK con salvedades
+- Rama / PR: auto/v0.3 · PR #3 (sale de borrador; base auto/v0.2)
+- Qué hizo: T16 `lib/server/autopilot-files.ts` (lectura con errores tipados sin rutas del servidor). T17 `/autopilot` (versiones, barra de progreso, tareas con estado y dependencias, `loading.tsx`, `error.tsx`, entrada de navegación). T18 sesiones recientes con duración, tiempo al 90 %, typecheck/build/tests y gráfico de duración (`BarChart`). T19 jerarquía de títulos y README. Helpers puros `taskProgress`, `taskStatus`, `durationPoints` en `lib/autopilot.ts`.
+- Verificación (puerta de versión, árbol limpio, base vacía `gatedb`, Postgres 16 local):
+  - pnpm install --frozen-lockfile: PASÓ
+  - pnpm test: PASÓ (167 tests, 0 omitidos, con DATABASE_URL)
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ (`/autopilot` dinámica)
+  - pnpm db:migrate sobre base vacía: PASÓ (3 migraciones); segunda corrida: "base al día"
+  - git grep TODO/FIXME/console.log: solo los `console.log` del runner de migraciones (salida intencional de CLI).
+  - Navegador (Playwright, `next start` con APP_SECRET de prueba): 390/700/1100 px sin desborde horizontal, barras de progreso y gráfico presentes; con RESULTADOS.MD movido temporalmente se vio el estado de error "No se encontró RESULTADOS.MD…" (archivo restaurado).
+- Evidencia por ítem de "Definición de versión completa" (v0.3): test/typecheck/build (arriba); parser y casos vacío/inválido (`tests/autopilot.test.ts`); estado de versiones y barra (`components/autopilot-panel.tsx`, smoke); lista de tareas con estado y dependencias (ídem); sesiones con fecha, resultado, duración, tiempo al 90 % y verificación (ídem); navegación + carga/vacío/error (`app/autopilot/{page,loading,error}.tsx`); README (sección "Panel del autopilot").
+- NO VERIFICADO: `error.tsx` y `loading.tsx` en navegador (solo compilan); tema oscuro de la pantalla; con la versión de v0.2 en main aún no mergeada, la base del PR es `auto/v0.2`.
+- Decisiones: en `taskProgress`/`durationPoints`/`taskStatus` el test y la implementación se escribieron en el mismo paso (no se vio el rojo previo); el parser (T15) y `autopilot-files` (T16) sí se vieron fallar antes por módulo inexistente. La pantalla se renderiza en servidor con `connection()` para leer los archivos en cada pedido.
+- Problemas / PREGUNTAS para el usuario: ninguno. Mergear primero el PR #2 (v0.2); el PR #3 se reorienta solo a `main`.
+- Dependencias agregadas: ninguna
+- Tiempos: inicio 10:47 UTC / fin 10:52 UTC (`date -u`), ~5 min. Tiempo al 90 %: NO DISPONIBLE.
+
+### 2026-11-14 10:47 (UTC) · T15 · Parser del autopilot
+- Resultado: OK
+- Rama / PR: auto/v0.3 · PR de la versión (borrador)
+- Qué hizo: `lib/autopilot.ts` con `parseRutina` (estado de versiones, backlogs, dependencias, `BLOQUEO:`) y `parseResultados` (tabla resumen y sesiones: fecha, resultado, duración, tiempo al 90 %, typecheck/build/tests). Errores tipados `empty` / `invalid-format`. Probado también contra los RUTINA.MD y RESULTADOS.MD reales del repo.
+- Archivos tocados: lib/autopilot.ts, tests/autopilot.test.ts, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm test: PASÓ (134 tests; sin DATABASE_URL, los de repositorios se omiten). Los 19 tests nuevos se vieron fallar antes (módulo inexistente).
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ
+  - Contra Postgres real: NO APLICA (lógica pura)
+- Decisiones: v0.2 estaba COMPLETA en `auto/v0.2` (aún no mergeada a main), por lo que `auto/v0.3` parte de ella. Las entradas de sesión con encabezado malformado se omiten en vez de romper el parseo.
+- Problemas / PREGUNTAS para el usuario: ninguno
+- Dependencias agregadas: ninguna
+- Tareas desbloqueadas / siguiente sugerida: T16
+- Tiempos: inicio 10:47 UTC / fin 10:50 UTC, ~3 min. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 08:47 (UTC) · T12, T14 · Cierre de v0.2
 - Resultado: OK con salvedades

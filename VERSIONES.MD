@@ -93,7 +93,7 @@ Casos borde obligatorios: ejercicio sin historial (primera carga la ingresa el u
 
 ---
 
-## v0.3 — Panel del autopilot (ver el resultado dentro de la app) · PLANIFICADA
+## v0.3 — Panel del autopilot (ver el resultado dentro de la app) · HECHA
 
 Empieza automáticamente cuando v0.2 queda `COMPLETA` (ver `RUTINA.MD`). Parte del código de v0.2.
 
@@ -113,17 +113,23 @@ Sirve para "ver el resultado" del autopilot en la app terminada.
 
 ### Definición de versión completa
 
-- [ ] `pnpm test`, `pnpm typecheck` y `pnpm build` pasan.
-- [ ] `lib/autopilot.ts` parsea backlog, estados de versión y tabla/entradas de RESULTADOS.MD, con tests incluidos los casos de formato inválido o vacío.
-- [ ] `/autopilot` muestra el estado de cada versión y una barra de progreso por tareas hechas / totales.
-- [ ] `/autopilot` lista las tareas con su estado (`[x]`, `[ ]`, bloqueada) y sus dependencias.
-- [ ] `/autopilot` muestra las últimas sesiones: fecha, resultado, duración, tiempo al 90 % y estado de typecheck/build/tests.
-- [ ] Hay entrada de navegación a `/autopilot`, con estados de carga, vacío y error, usable en compact/medium/expanded.
-- [ ] README documenta la pantalla y de dónde saca los datos.
+- [x] `pnpm test`, `pnpm typecheck` y `pnpm build` pasan.
+- [x] `lib/autopilot.ts` parsea backlog, estados de versión y tabla/entradas de RESULTADOS.MD, con tests incluidos los casos de formato inválido o vacío.
+- [x] `/autopilot` muestra el estado de cada versión y una barra de progreso por tareas hechas / totales.
+- [x] `/autopilot` lista las tareas con su estado (`[x]`, `[ ]`, bloqueada) y sus dependencias.
+- [x] `/autopilot` muestra las últimas sesiones: fecha, resultado, duración, tiempo al 90 % y estado de typecheck/build/tests.
+- [x] Hay entrada de navegación a `/autopilot`, con estados de carga, vacío y error, usable en compact/medium/expanded.
+- [x] README documenta la pantalla y de dónde saca los datos.
 
 ### Cambios de la versión
 
 <!-- El autopilot agrega una línea por tarea: AAAA-MM-DD · Tn · resumen -->
+
+- 2026-11-14 · T15 · `lib/autopilot.ts`: parser puro de RUTINA.MD y RESULTADOS.MD con tests.
+- 2026-11-14 · T16 · `lib/server/autopilot-files.ts`: lectura en servidor de RUTINA/RESULTADOS/VERSIONES con errores tipados.
+- 2026-11-14 · T17 · `/autopilot`: versiones, barra de progreso y lista de tareas con estado y dependencias; entrada de navegación.
+- 2026-11-14 · T18 · `/autopilot`: últimas 10 sesiones con resultado, duración, tiempo al 90 % y verificación; gráfico de duración.
+- 2026-11-14 · T19 · Pulido: jerarquía de títulos, estado de error verificado, README documenta la pantalla y su fuente de datos.
 
 ---
 
