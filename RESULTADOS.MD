@@ -56,7 +56,7 @@ Reglas de escritura (para el agente):
 - Problemas / PREGUNTAS para el usuario: ninguno
 - Dependencias agregadas: ninguna
 - Tareas desbloqueadas / siguiente sugerida: T16
-- Tiempos: inicio 10:47 UTC / fin 10:58 UTC, ~11 min. Tiempo al 90 %: NO DISPONIBLE.
+- Tiempos: inicio 10:47 UTC / fin 10:50 UTC, ~3 min. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 08:47 (UTC) · T12, T14 · Cierre de v0.2
 - Resultado: OK con salvedades
