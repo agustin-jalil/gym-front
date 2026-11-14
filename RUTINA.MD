@@ -17,7 +17,7 @@ Archivos del sistema:
 > Valores: `PLANIFICADA` | `EN CURSO` | `BLOQUEADA` | `COMPLETA`. El orden de la lista es el orden de ejecución.
 > `COMPLETA` en la rama de la versión significa "lista para que el usuario mergee".
 
-- v0.2: EN CURSO
+- v0.2: COMPLETA
 - v0.3: PLANIFICADA
 - v0.4: PLANIFICADA (sin backlog: no se empieza)
 

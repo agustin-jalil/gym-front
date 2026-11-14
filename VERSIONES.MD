@@ -14,7 +14,7 @@ y ajustes. Datos en `localStorage` (clave `gym:v1`) vía `lib/store.ts`.
 
 ---
 
-## v0.2 — Backend en Next + Postgres, medidas corporales y manejo de cargas · ACTUAL
+## v0.2 — Backend en Next + Postgres, medidas corporales y manejo de cargas · COMPLETA
 
 ### Objetivo
 
@@ -62,17 +62,17 @@ Casos borde obligatorios: ejercicio sin historial (primera carga la ingresa el u
 
 ### Definición de versión completa
 
-- [ ] `pnpm typecheck` y `pnpm build` pasan en `main`.
-- [ ] La app corre contra Postgres con `DATABASE_URL`; `pnpm db:migrate` crea todo desde cero.
-- [ ] Rutinas, entrenamientos y series se guardan y se leen de Postgres; ya no dependen de `localStorage`.
-- [ ] Existe importación única de los datos viejos de `localStorage` (`gym:v1`) hacia la base.
-- [ ] Se pueden crear rutinas de tipo hipertrofia y de estrés metabólico desde el editor.
-- [ ] Pantalla de medidas: alta, edición, historial y variación en cm entre mediciones.
-- [ ] `/entrenar/[id]` muestra la carga sugerida con su explicación, permite aceptarla o ajustarla y guarda RPE opcional.
-- [ ] `lib/progression.ts` cubre las reglas de arriba con tests (`node --test`) que pasan, incluidos los casos borde.
-- [ ] `/progreso` muestra evolución de cargas y de medidas.
-- [ ] Protección de acceso simple (secreto por variable de entorno) antes de exponer la app.
-- [ ] README documenta variables de entorno, migraciones y cómo correr todo.
+- [x] `pnpm typecheck` y `pnpm build` pasan en `main`.
+- [x] La app corre contra Postgres con `DATABASE_URL`; `pnpm db:migrate` crea todo desde cero.
+- [x] Rutinas, entrenamientos y series se guardan y se leen de Postgres; ya no dependen de `localStorage`.
+- [x] Existe importación única de los datos viejos de `localStorage` (`gym:v1`) hacia la base.
+- [x] Se pueden crear rutinas de tipo hipertrofia y de estrés metabólico desde el editor.
+- [x] Pantalla de medidas: alta, edición, historial y variación en cm entre mediciones.
+- [x] `/entrenar/[id]` muestra la carga sugerida con su explicación, permite aceptarla o ajustarla y guarda RPE opcional.
+- [x] `lib/progression.ts` cubre las reglas de arriba con tests (`node --test`) que pasan, incluidos los casos borde.
+- [x] `/progreso` muestra evolución de cargas y de medidas.
+- [x] Protección de acceso simple (secreto por variable de entorno) antes de exponer la app.
+- [x] README documenta variables de entorno, migraciones y cómo correr todo.
 
 ### Cambios de la versión
 

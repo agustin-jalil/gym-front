@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 8 | 13 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
+| 8 | 14 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -41,6 +41,25 @@ Reglas de escritura (para el agente):
 ```
 
 ## Sesiones
+
+### 2026-11-14 08:47 (UTC) · T12, T14 · Cierre de v0.2
+- Resultado: OK con salvedades
+- Rama / PR: auto/v0.2 · PR de la versión (sale de borrador)
+- Qué hizo: T12 (`/progreso` con evolución de medidas) y T14 (pulido: README con variables de entorno, tests, medidas y carga sugerida; revisión de layout y labels). Puerta de versión ejecutada; v0.2 queda COMPLETA.
+- Verificación (puerta de versión, sobre `auto/v0.2` con árbol limpio, base vacía `gatedb`):
+  - pnpm install --frozen-lockfile: PASÓ
+  - pnpm test: PASÓ (139 tests, 0 omitidos, con DATABASE_URL; repetido 4 veces, 4 verdes). Una primera corrida mostró `pass 115 / tests 139` sin fallos ni omitidos y no se reprodujo; causa NO DETERMINADA (posible interferencia entre archivos de test que comparten la base, ya que truncan tablas).
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ
+  - pnpm db:migrate sobre base vacía: PASÓ (3 migraciones); segunda corrida: "base al día" (idempotente)
+  - Tests de repositorios contra Postgres: PASÓ (dentro de los 139)
+  - git grep TODO/FIXME/console.log/secretos: solo `console.log` del runner de migraciones (salida intencional de CLI) y el ejemplo del README.
+  - Layout: 390/700/1100 px sin desborde horizontal y sin inputs sin label en /, /progreso, /medidas, /historial, /rutinas, /ejercicios, /ajustes (Playwright).
+- Evidencia por ítem de "Definición de versión completa": typecheck/build verdes en la rama (en `main` se verá al mergear); migración desde cero (comando arriba); Postgres para rutinas/entrenamientos/series (tests de repositorios, sesiones previas); importación `gym:v1` (T7, `tests/legacy-import*.test.ts`); tipos de rutina (T5, `tests/routine-types.test.ts`); `/medidas` (T9, `tests/measurement-history.test.ts`); carga sugerida y RPE (T11, `tests/suggestions.test.ts`); `lib/progression.ts` (T10, `tests/progression.test.ts`); `/progreso` (T12); acceso (T13, `tests/auth.test.ts`); README (T14).
+- NO VERIFICADO: estados de error/“Reintentar” de `/progreso` en navegador; `/entrenar/[id]` con sugerencia end-to-end en navegador esta sesión; comportamiento con `APP_SECRET` de producción real.
+- Decisiones para el usuario: ver PREGUNTAS de entradas anteriores (`reset` no borra rutinas del servidor; respaldo JSON no importa rutinas).
+- Dependencias agregadas: ninguna
+- Tiempos: inicio 08:47 UTC / fin ~09:05 UTC. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 08:47 (UTC) · T12 · /progreso con evolución de medidas
 - Resultado: OK
