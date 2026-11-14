@@ -46,6 +46,23 @@ export function variations(entries: readonly MeasurementEntry[]): MeasurementVar
   })
 }
 
+export type MeasurementPoint = { measuredOn: string; value: number }
+
+/** Evolución de un campo, de la medición más vieja a la más nueva; omite las que no lo cargaron. */
+export function measurementSeries(entries: readonly MeasurementEntry[], field: MeasurementField): MeasurementPoint[] {
+  return [...entries]
+    .sort((a, b) => -newestFirst(a, b))
+    .flatMap((e) => {
+      const value = e[field]
+      return value === null ? [] : [{ measuredOn: e.measuredOn, value }]
+    })
+}
+
+/** Campos con al menos un valor cargado, en el orden canónico. */
+export function fieldsWithData(entries: readonly MeasurementEntry[]): MeasurementField[] {
+  return MEASUREMENT_FIELDS.filter((f) => entries.some((e) => e[f] !== null))
+}
+
 export function formatDelta(delta: number | null, unit: 'kg' | 'cm'): string {
   if (delta === null) return '—'
   const abs = String(Math.abs(delta)).replace('.', ',')

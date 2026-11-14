@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 7 | 12 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
+| 8 | 13 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -41,6 +41,24 @@ Reglas de escritura (para el agente):
 ```
 
 ## Sesiones
+
+### 2026-11-14 08:47 (UTC) · T12 · /progreso con evolución de medidas
+- Resultado: OK
+- Rama / PR: auto/v0.2 · PR de la versión (borrador)
+- Qué hizo: `/progreso` ya mostraba evolución de cargas por ejercicio y volumen (T4/T6); se agregó la sección "Medidas corporales" con selector de medida (solo las que tienen datos), gráfico de línea y cambio desde la primera medición, con estados de carga, vacío y error con "Reintentar". Lógica pura nueva `measurementSeries` y `fieldsWithData`.
+- Archivos tocados: lib/measurement-history.ts, tests/measurement-history.test.ts, app/progreso/page.tsx, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ
+  - node --test: PASÓ (139 tests con DATABASE_URL, 0 omitidos; 115 sin base). Los 5 tests nuevos se vieron fallar antes (export inexistente).
+  - Contra Postgres real: SÍ (migraciones desde base vacía, tests de repositorios y smoke con `next start` + Playwright: `/progreso` renderiza el gráfico de medidas con datos reales). Smoke hecho antes de pasar las fechas a formato UTC; tras ese cambio solo se re-corrieron test, typecheck y build.
+  - NO VERIFICADO: estado de error y "Reintentar" en el navegador; el gráfico de cargas con sesiones reales en Postgres.
+- Decisiones tomadas y por qué: fechas de medidas formateadas en UTC (son AAAA-MM-DD; en zona local de Argentina mostrarían el día anterior).
+- Problemas / PREGUNTAS para el usuario: ninguno
+- Dependencias agregadas: ninguna
+- Tareas que quedaron desbloqueadas / siguiente sugerida: T14
+- Esfuerzo: ~25 comandos, 2 reintentos (tipos de Alert/LoadingState; APP_SECRET para el smoke).
+- Tiempos: inicio 08:47 UTC / fin 08:52 UTC, ~5 min. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 06:57 (UTC) · T13 · Acceso protegido
 - Resultado: OK con salvedades
