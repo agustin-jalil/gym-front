@@ -18,7 +18,7 @@ Archivos del sistema:
 > `COMPLETA` en la rama de la versión significa "lista para que el usuario mergee".
 
 - v0.2: COMPLETA
-- v0.3: EN CURSO
+- v0.3: COMPLETA
 - v0.4: PLANIFICADA (sin backlog: no se empieza)
 
 **Versión ACTUAL** = la primera de la lista cuyo estado no es `COMPLETA`.
@@ -138,7 +138,7 @@ Tn · intentos: N sesiones · probado: ... · falló: ... · próximo paso: ...
 2026-11-14 08:51 · T12 · OK
 2026-11-14 08:58 · T14 · OK
 2026-11-14 10:50 · T15 · OK
-2026-11-14 10:51 · T16 · OK
+2026-11-14 10:52 · T16 · OK
 2026-11-14 10:52 · T17 · OK
-2026-11-14 10:53 · T18 · OK
-2026-11-14 10:56 · T19 · OK
+2026-11-14 10:52 · T18 · OK
+2026-11-14 10:52 · T19 · OK
