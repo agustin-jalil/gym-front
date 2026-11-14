@@ -228,3 +228,24 @@ describe("parseResultados", () => {
     assert.equal(r.data.sessions[0].durationMin, 20);
   });
 });
+
+describe("progreso y estado de tareas", () => {
+  const t = (id: string, done: boolean, dependsOn: string[] = [], blocked: string | null = null) => ({ id, done, title: id, dependsOn, blocked });
+
+  test("taskProgress cuenta hechas y totales", async () => {
+    const { taskProgress } = await import("../lib/autopilot.ts");
+    assert.deepEqual(taskProgress([]), { done: 0, total: 0, percent: 0 });
+    assert.deepEqual(taskProgress([t("T1", true), t("T2", false), t("T3", true), t("T4", false)]), { done: 2, total: 4, percent: 50 });
+    assert.equal(taskProgress([t("T1", true), t("T2", false), t("T3", false)]).percent, 33);
+  });
+
+  test("taskStatus: hecha, bloqueada, lista y esperando", async () => {
+    const { taskStatus } = await import("../lib/autopilot.ts");
+    const all = [t("T1", true), t("T2", false, ["T1"]), t("T3", false, ["T2"]), t("T4", false, [], "motivo"), t("T5", false, ["T9"])];
+    assert.equal(taskStatus(all[0], all), "done");
+    assert.equal(taskStatus(all[1], all), "ready");
+    assert.equal(taskStatus(all[2], all), "waiting");
+    assert.equal(taskStatus(all[3], all), "blocked");
+    assert.equal(taskStatus(all[4], all), "waiting");
+  });
+});

@@ -195,3 +195,20 @@ export function parseResultados(text: string): ParseResult<ResultadosData> {
   const summaryBody = section(lines, (h) => h === 'Resumen acumulado')
   return { ok: true, data: { summary: summaryBody ? parseSummary(summaryBody) : null, sessions } }
 }
+
+export type TaskProgress = { done: number; total: number; percent: number }
+
+export function taskProgress(tasks: BacklogTask[]): TaskProgress {
+  const done = tasks.filter((t) => t.done).length
+  return { done, total: tasks.length, percent: tasks.length === 0 ? 0 : Math.round((done / tasks.length) * 100) }
+}
+
+export type TaskStatus = 'done' | 'blocked' | 'ready' | 'waiting'
+
+/** `ready`: todas sus dependencias están hechas; `waiting`: alguna dependencia falta (o no existe en el backlog). */
+export function taskStatus(task: BacklogTask, all: BacklogTask[]): TaskStatus {
+  if (task.done) return 'done'
+  if (task.blocked !== null) return 'blocked'
+  const doneIds = new Set(all.filter((t) => t.done).map((t) => t.id))
+  return task.dependsOn.every((d) => doneIds.has(d)) ? 'ready' : 'waiting'
+}
