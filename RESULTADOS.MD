@@ -42,6 +42,22 @@ Reglas de escritura (para el agente):
 
 ## Sesiones
 
+### 2026-11-14 10:47 (UTC) · T15 · Parser del autopilot
+- Resultado: OK
+- Rama / PR: auto/v0.3 · PR de la versión (borrador)
+- Qué hizo: `lib/autopilot.ts` con `parseRutina` (estado de versiones, backlogs, dependencias, `BLOQUEO:`) y `parseResultados` (tabla resumen y sesiones: fecha, resultado, duración, tiempo al 90 %, typecheck/build/tests). Errores tipados `empty` / `invalid-format`. Probado también contra los RUTINA.MD y RESULTADOS.MD reales del repo.
+- Archivos tocados: lib/autopilot.ts, tests/autopilot.test.ts, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm test: PASÓ (134 tests; sin DATABASE_URL, los de repositorios se omiten). Los 19 tests nuevos se vieron fallar antes (módulo inexistente).
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ
+  - Contra Postgres real: NO APLICA (lógica pura)
+- Decisiones: v0.2 estaba COMPLETA en `auto/v0.2` (aún no mergeada a main), por lo que `auto/v0.3` parte de ella. Las entradas de sesión con encabezado malformado se omiten en vez de romper el parseo.
+- Problemas / PREGUNTAS para el usuario: ninguno
+- Dependencias agregadas: ninguna
+- Tareas desbloqueadas / siguiente sugerida: T16
+- Tiempos: inicio 10:47 UTC / fin 10:58 UTC, ~11 min. Tiempo al 90 %: NO DISPONIBLE.
+
 ### 2026-11-14 08:47 (UTC) · T12, T14 · Cierre de v0.2
 - Resultado: OK con salvedades
 - Rama / PR: auto/v0.2 · PR de la versión (sale de borrador)

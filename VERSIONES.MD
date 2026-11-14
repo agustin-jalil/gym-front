@@ -125,6 +125,8 @@ Sirve para "ver el resultado" del autopilot en la app terminada.
 
 <!-- El autopilot agrega una línea por tarea: AAAA-MM-DD · Tn · resumen -->
 
+- 2026-11-14 · T15 · `lib/autopilot.ts`: parser puro de RUTINA.MD y RESULTADOS.MD con tests.
+
 ---
 
 ## v0.4 — Ideas futuras · PLANIFICADA
