@@ -12,7 +12,7 @@ Reglas de escritura (para el agente):
 
 | Sesiones | Tareas OK | Tareas con bloqueo | PRs abiertos hoy | Duración media (min) | Tiempo medio al 90 % (min) | Última actualización |
 |---|---|---|---|---|---|---|
-| 4 | 6 | 0 | 2 | ~5 | NO DISPONIBLE | 2026-11-14 |
+| 4 | 7 | 0 | 2 | ~6 | NO DISPONIBLE | 2026-11-14 |
 
 > El agente actualiza esta fila en cada entrada.
 
@@ -41,6 +41,23 @@ Reglas de escritura (para el agente):
 ```
 
 ## Sesiones
+
+### 2026-11-14 03:00 (UTC) · T8 · Medidas corporales (back)
+- Resultado: OK
+- Rama / PR: auto/v0.2
+- Qué hizo: `lib/measurements.ts` (campos, `parseMeasurement`: fecha calendario real, valores >0 y ≤500, todo opcional salvo la fecha), `lib/server/measurements.ts` (list/get/create/update/delete; `numeric` → número, fecha como `AAAA-MM-DD` vía `to_char` para evitar desfases de zona horaria) y API `GET/POST /api/measurements`, `GET/PUT/DELETE /api/measurements/[id]`. La tabla ya existía desde T1 (sin migración nueva).
+- Archivos tocados: lib/measurements.ts, lib/server/measurements.ts, app/api/measurements/route.ts, app/api/measurements/[id]/route.ts, tests/measurements-validation.test.ts, tests/measurements-repo.test.ts, RUTINA.MD, VERSIONES.MD, RESULTADOS.MD
+- Verificación:
+  - pnpm test: PASÓ, 80 tests, 0 omitidos (los nuevos se vieron fallar antes por módulo inexistente; un fallo posterior fue de import sin extensión `.ts` en runtime Node, corregido)
+  - pnpm typecheck: PASÓ
+  - pnpm build: PASÓ
+  - Contra Postgres real: SÍ (Postgres 16 local en puerto 5433 levantado con los binarios del sistema; `pnpm db:migrate` desde base vacía aplicó 0001 y 0002). Humo de la API con `next start`: POST 201, fecha inválida 400, valor negativo 400, GET lista, PUT, DELETE 204 y luego 404.
+  - Segunda corrida de `db:migrate` (idempotencia) NO repetida en esta sesión (sin cambios de esquema).
+- Decisiones: PUT reemplaza todos los campos (igual que rutinas); límite superior 500 (kg o cm) como cordura de entrada, más estricto que el `numeric` de la base.
+- Problemas / PREGUNTAS para el usuario: ninguno
+- Dependencias agregadas: ninguna
+- Tareas desbloqueadas / siguiente sugerida: T9 (front de medidas), T6
+- Tiempos: inicio 03:00 UTC / fin 03:10 UTC, ~10 min. Tiempo al 90 %: NO DISPONIBLE.
 
 ### 2026-11-14 02:52 (UTC) · T10 · Lógica de progresión de cargas
 - Resultado: OK
