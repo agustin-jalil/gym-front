@@ -86,6 +86,7 @@ Casos borde obligatorios: ejercicio sin historial (primera carga la ingresa el u
 - 2026-11-14 · T10 · `lib/progression.ts`: carga sugerida (progresión doble, estrés metabólico, deload, casos borde) con 30 tests `node --test`.
 - 2026-11-14 · T13 · Acceso protegido: `proxy.ts` exige `APP_SECRET` (cookie httpOnly o Bearer) en pantallas y API, `/acceso`, `lib/auth.ts`; sin secreto en producción responde 503.
 - 2026-11-14 · T12 · `/progreso`: sección de medidas corporales (evolución por medida y cambio en cm) junto a la evolución de cargas; `measurementSeries` y `fieldsWithData` en `lib/measurement-history.ts`.
+- 2026-11-14 · T14 · Pulido final: revisión de estados, layout (390/700/1100 px sin desborde) y labels; README con variables de entorno, tests, medidas y carga sugerida.
 - 2026-11-14 · T11 · Carga sugerida en `/entrenar/[id]`: `lib/suggestions.ts` arma el historial real y llama a `suggestLoad`; caja con sugerencia y explicación, "Aceptar sugerencia" y RPE opcional por serie.
 - 2026-11-14 · T9 · Medidas corporales (front): pantalla `/medidas` (alta, edición, borrado, historial, variación por campo), `lib/measurement-history.ts`, entrada en la navegación.
 - 2026-11-14 · T8 · Medidas corporales (back): `lib/measurements.ts` (validación), `lib/server/measurements.ts` (repositorio) y API `/api/measurements`.

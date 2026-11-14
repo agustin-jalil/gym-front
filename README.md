@@ -5,15 +5,27 @@ Proyecto **independiente**: no depende de ningún paquete ni contrato del ecosis
 
 ## Correr
 
+Primera vez: `cp .env.example .env.local`, completar `DATABASE_URL` y `APP_SECRET`, y correr `pnpm db:migrate`.
+
 ```bash
 pnpm install
 pnpm dev        # http://localhost:3030
 pnpm build && pnpm start
+pnpm test       # node --test (los de repositorios necesitan DATABASE_URL de una base de pruebas)
 pnpm typecheck
 pnpm db:migrate # aplica db/migrations/*.sql sobre DATABASE_URL
 ```
 
-## Base de datos (v0.2, en construcción)
+## Variables de entorno
+
+| Variable | Para qué | Obligatoria |
+|---|---|---|
+| `DATABASE_URL` | Conexión a PostgreSQL (`postgres://usuario:clave@host:5432/base`) | Sí |
+| `APP_SECRET` | Clave de acceso a pantallas y API | Sí en producción |
+
+Nunca commitees `.env*` con valores reales; `.env.example` solo lleva ejemplos.
+
+## Base de datos
 
 PostgreSQL, accedido solo desde código de servidor (`lib/server/db.ts`, `server-only`). Copiá `.env.example` a `.env.local`
 y completá `DATABASE_URL`. `pnpm db:migrate` crea el esquema desde cero y es idempotente (registra lo aplicado en
@@ -40,7 +52,8 @@ los componentes están en `components/ui`, el estado en `lib/store.ts`.
 | `/rutinas`, `/rutinas/[id]` | Lista y editor de rutinas (días, ejercicios, series, reps, kg, descanso) |
 | `/entrenar/[id]` | Entrenamiento en curso (modo foco, sin navegación) |
 | `/historial` | Entrenamientos terminados, por mes |
-| `/progreso` | Volumen semanal y evolución por ejercicio |
+| `/medidas` | Medidas corporales (cm, peso en kg): alta, edición, historial y variación contra la medición anterior |
+| `/progreso` | Volumen semanal, evolución de cargas por ejercicio y evolución de medidas corporales |
 | `/ejercicios` | Catálogo, con ejercicios propios |
 | `/ajustes` | Tema, respaldo y restauración de datos |
 
@@ -53,6 +66,13 @@ Los datos viejos de `gym:v1` se llevan a la base con el botón «Importar datos 
 (`POST /api/import`): es idempotente, no duplica y no borra nada del navegador. **Todo el acceso a datos pasa por
 `lib/store.ts`** (`useGym()` para leer y `gym.*` para escribir): carga con estado de error y reintento, cambios
 optimistas y guardado agrupado de la rutina que se edita.
+
+## Carga sugerida
+
+`lib/progression.ts` (lógica pura, con tests) calcula para cada ejercicio la carga y las reps objetivo a partir del historial y del tipo
+de rutina: **hipertrofia** (progresión doble, 6–12 reps, 90–180 s) o **estrés metabólico** (12–20 reps, 30–60 s; primero reps y menos
+descanso, carga +2,5 % solo al completar el tope con el descanso mínimo). `/entrenar/[id]` muestra la sugerencia con su explicación;
+podés aceptarla o ajustarla, y guardar el RPE opcional de cada serie.
 
 ## Personalizar
 
