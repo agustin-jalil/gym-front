@@ -249,3 +249,22 @@ describe("progreso y estado de tareas", () => {
     assert.equal(taskStatus(all[4], all), "waiting");
   });
 });
+
+describe("durationPoints", () => {
+  const s = (date: string, time: string, durationMin: number | null) => ({
+    date, time, tasks: ["T1"], title: "x", result: "OK", durationMin, timeTo90: null,
+    verification: { typecheck: null, build: null, tests: null },
+  });
+
+  test("orden cronológico, omite sesiones sin duración", async () => {
+    const { durationPoints } = await import("../lib/autopilot.ts");
+    const pts = durationPoints([s("2026-01-03", "10:00", 5), s("2026-01-01", "09:00", null), s("2026-01-02", "08:00", 12)]);
+    assert.deepEqual(pts.map((p) => p.value), [12, 5]);
+    assert.equal(pts[0].label, "01-02");
+  });
+
+  test("vacío", async () => {
+    const { durationPoints } = await import("../lib/autopilot.ts");
+    assert.deepEqual(durationPoints([]), []);
+  });
+});

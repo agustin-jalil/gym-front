@@ -212,3 +212,11 @@ export function taskStatus(task: BacklogTask, all: BacklogTask[]): TaskStatus {
   const doneIds = new Set(all.filter((t) => t.done).map((t) => t.id))
   return task.dependsOn.every((d) => doneIds.has(d)) ? 'ready' : 'waiting'
 }
+
+/** Puntos para el gráfico de duración: más antigua primero; las sesiones sin duración medida se omiten. */
+export function durationPoints(sessions: SessionEntry[]): { label: string; value: number }[] {
+  return sessions
+    .filter((s): s is SessionEntry & { durationMin: number } => s.durationMin !== null)
+    .toSorted((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`))
+    .map((s) => ({ label: s.date.slice(5), value: s.durationMin }))
+}

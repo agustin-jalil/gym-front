@@ -1,5 +1,19 @@
 import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { taskProgress, taskStatus, type BacklogTask, type RutinaData, type TaskStatus, type VersionState } from '@/lib/autopilot'
+import { BarChart } from '@/components/charts'
+import { SectionHeader } from '@/components/page'
+import { EmptyState } from '@/components/ui/states'
+import {
+  durationPoints,
+  taskProgress,
+  taskStatus,
+  type BacklogTask,
+  type CheckStatus,
+  type ResultadosData,
+  type RutinaData,
+  type SessionEntry,
+  type TaskStatus,
+  type VersionState,
+} from '@/lib/autopilot'
 
 const STATE_LABEL: Record<VersionState, string> = {
   PLANIFICADA: 'Planificada',
@@ -100,5 +114,84 @@ export function AutopilotVersions({ rutina }: { rutina: RutinaData }) {
         )
       })}
     </div>
+  )
+}
+
+const CHECK_LABEL: Record<CheckStatus | 'unknown', string> = { pass: 'Pasó', fail: 'Falló', 'not-run': 'No corrido', unknown: 'Sin dato' }
+const CHECK_TONE: Record<CheckStatus | 'unknown', 'neutral' | 'primary' | 'success' | 'gold'> = {
+  pass: 'success',
+  fail: 'gold',
+  'not-run': 'neutral',
+  unknown: 'neutral',
+}
+
+function Check({ name, status }: { name: string; status: CheckStatus | null }) {
+  const key = status ?? 'unknown'
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs">
+      <span className="text-muted-foreground">{name}</span>
+      <Badge tone={CHECK_TONE[key]}>{CHECK_LABEL[key]}</Badge>
+    </span>
+  )
+}
+
+const RECENT = 10
+
+function SessionRow({ s }: { s: SessionEntry }) {
+  return (
+    <li className="flex flex-col gap-1.5 py-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="font-semibold">
+          {s.date} {s.time} UTC
+        </span>
+        {s.result ? <Badge tone={s.result.startsWith('OK') ? 'success' : 'gold'}>{s.result}</Badge> : null}
+      </div>
+      <p className="text-sm">
+        {s.tasks.join(', ')} · {s.title}
+      </p>
+      <p className="text-xs text-muted-foreground">
+        Duración: {s.durationMin === null ? 'sin dato' : `${s.durationMin} min`} · Tiempo al 90 %: {s.timeTo90 ?? 'sin dato'}
+      </p>
+      <div className="flex flex-wrap gap-x-4 gap-y-1">
+        <Check name="Typecheck" status={s.verification.typecheck} />
+        <Check name="Build" status={s.verification.build} />
+        <Check name="Tests" status={s.verification.tests} />
+      </div>
+    </li>
+  )
+}
+
+export function AutopilotSessions({ resultados }: { resultados: ResultadosData }) {
+  const recent = resultados.sessions.toSorted((a, b) => `${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`)).slice(0, RECENT)
+  const points = durationPoints(recent)
+  return (
+    <section className="space-y-3">
+      <SectionHeader title="Últimas sesiones" />
+      {recent.length === 0 ? (
+        <EmptyState title="Todavía no hay sesiones" description="RESULTADOS.MD no tiene entradas de sesión." />
+      ) : (
+        <>
+          {points.length > 0 ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Duración por sesión</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <BarChart points={points} unit="min" label="Duración por sesión" />
+              </CardContent>
+            </Card>
+          ) : null}
+          <Card>
+            <CardContent className="pt-1 medium:pt-1">
+              <ul className="divide-y">
+                {recent.map((s) => (
+                  <SessionRow key={`${s.date}-${s.time}-${s.tasks.join('-')}`} s={s} />
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </>
+      )}
+    </section>
   )
 }
