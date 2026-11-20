@@ -4,7 +4,7 @@ import { SyncErrorBanner } from '@/components/gym-loading'
 import * as React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ClipboardList, Dumbbell, History, Home, Ruler, Settings, TrendingUp } from 'lucide-react'
+import { Bot, ClipboardList, Dumbbell, History, Home, Ruler, Settings, TrendingUp } from 'lucide-react'
 import { APP_NAME } from '@/lib/app'
 import { cn } from '@/lib/utils'
 
@@ -24,6 +24,7 @@ const DESTINATIONS: Destination[] = [
   { href: '/historial', label: 'Historial', icon: History, bottom: true },
   { href: '/medidas', label: 'Medidas', icon: Ruler },
   { href: '/progreso', label: 'Progreso', icon: TrendingUp, bottom: true },
+  { href: '/autopilot', label: 'Autopilot', icon: Bot },
   { href: '/ajustes', label: 'Ajustes', icon: Settings, bottom: true },
 ]
 
