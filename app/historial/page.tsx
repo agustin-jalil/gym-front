@@ -6,7 +6,8 @@ import { PageContainer, PageHeader, SectionHeader } from '@/components/page'
 import { Badge, Card } from '@/components/ui/card'
 import { Button, ButtonLink } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { EmptyState, LoadingState } from '@/components/ui/states'
+import { EmptyState } from '@/components/ui/states'
+import { GymLoading } from '@/components/gym-loading'
 import { gym, useGym } from '@/lib/store'
 import { sessionSets, sessionVolume } from '@/lib/stats'
 import type { Session } from '@/lib/types'
@@ -19,7 +20,7 @@ export default function HistorialPage() {
   if (!g.hydrated)
     return (
       <PageContainer>
-        <LoadingState />
+        <GymLoading />
       </PageContainer>
     )
 

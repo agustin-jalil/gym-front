@@ -7,7 +7,8 @@ import { RoutineCard } from '@/components/routine-card'
 import { WeekStrip } from '@/components/week-strip'
 import { Badge, Card } from '@/components/ui/card'
 import { Button, ButtonLink } from '@/components/ui/button'
-import { EmptyState, LoadingState, StatCard } from '@/components/ui/states'
+import { EmptyState, StatCard } from '@/components/ui/states'
+import { GymLoading } from '@/components/gym-loading'
 import { useGym, gym } from '@/lib/store'
 import { sessionVolume, sessionsThisWeek, streakWeeks, weeklyVolume } from '@/lib/stats'
 import { dateLong, dateShort, formatKg } from '@/lib/utils'
@@ -22,7 +23,7 @@ export default function HoyPage() {
   if (!g.hydrated)
     return (
       <PageContainer>
-        <LoadingState />
+        <GymLoading />
       </PageContainer>
     )
 

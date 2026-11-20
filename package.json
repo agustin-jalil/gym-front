@@ -6,6 +6,7 @@
     "dev": "next dev -p 3030",
     "build": "next build",
     "start": "next start -p 3030",
+    "test": "node --conditions=react-server --test \"tests/*.test.ts\"",
     "typecheck": "tsc --noEmit",
     "db:migrate": "node --env-file-if-exists=.env.local scripts/migrate.mjs"
   },

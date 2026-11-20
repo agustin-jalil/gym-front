@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import { Download, RotateCcw, Upload } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Download, DatabaseBackup, RotateCcw, Upload } from 'lucide-react'
 import { PageContainer, PageHeader, SectionHeader } from '@/components/page'
 import { ThemeToggle } from '@/components/theme'
 import { Alert } from '@/components/alert'
@@ -14,6 +14,29 @@ export default function AjustesPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const [msg, setMsg] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
   const [confirmReset, setConfirmReset] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const [imported, setImported] = useState(false)
+  useEffect(() => setImported(gym.legacyImported()), [])
+
+  const importLegacy = async () => {
+    setImporting(true)
+    try {
+      const r = await gym.importLegacy()
+      setImported(true)
+      const total = r.exercises + r.routines + r.workouts
+      setMsg({
+        tone: 'success',
+        text:
+          total === 0
+            ? 'No había datos nuevos para importar.'
+            : `Importado: ${r.workouts} entrenamientos, ${r.routines} rutinas y ${r.exercises} ejercicios propios.${r.skipped > 0 ? ` Se omitieron ${r.skipped} elementos que ya estaban o no se pudieron leer.` : ''}`,
+      })
+    } catch (e) {
+      setMsg({ tone: 'error', text: e instanceof Error ? e.message : 'No se pudo importar.' })
+    } finally {
+      setImporting(false)
+    }
+  }
 
   const exportData = () => {
     const blob = new Blob([gym.exportJson()], { type: 'application/json' })
@@ -28,7 +51,7 @@ export default function AjustesPage() {
 
   const importData = async (file: File) => {
     const ok = gym.importJson(await file.text())
-    setMsg(ok ? { tone: 'success', text: 'Datos restaurados.' } : { tone: 'error', text: 'Ese archivo no es un respaldo válido.' })
+    setMsg(ok ? { tone: 'success', text: 'Entrenamiento en curso restaurado. Rutinas, ejercicios e historial del respaldo no se importan todavía.' } : { tone: 'error', text: 'Ese archivo no es un respaldo válido.' })
     if (fileRef.current) fileRef.current.value = ''
   }
 
@@ -53,8 +76,8 @@ export default function AjustesPage() {
         <Card>
           <div className="space-y-4 p-4">
             <p className="text-sm text-muted-foreground">
-              Todo se guarda solo en este dispositivo, en el navegador. Si cambiás de celular o borrás los datos del
-              navegador, se pierde: descargá un respaldo de vez en cuando.
+              Tus rutinas, ejercicios y entrenamientos se guardan en la base de datos del servidor. Solo el entrenamiento
+              en curso se guarda en este dispositivo, en el navegador. Podés descargar un respaldo cuando quieras.
             </p>
             <div className="flex flex-col gap-2 medium:flex-row">
               <Button variant="outline" onClick={exportData}>
@@ -81,9 +104,22 @@ export default function AjustesPage() {
 
         <Card>
           <div className="space-y-3 p-4">
-            <p className="text-sm text-muted-foreground">Borra todo y vuelve a cargar las rutinas de ejemplo.</p>
+            <p className="text-sm text-muted-foreground">
+              {imported
+                ? 'Ya importaste los datos guardados en este navegador. No se borraron del navegador, pero no hace falta repetirlo.'
+                : 'Si usaste la versión anterior en este navegador, llevá tu historial, tus rutinas y tus ejercicios propios a la base de datos. Se hace una sola vez y no duplica datos.'}
+            </p>
+            <Button variant="outline" onClick={() => void importLegacy()} disabled={importing || imported}>
+              <DatabaseBackup /> {importing ? 'Importando…' : 'Importar datos de este navegador'}
+            </Button>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="space-y-3 p-4">
+            <p className="text-sm text-muted-foreground">Borra todo el historial de entrenamientos del servidor. Tus rutinas y ejercicios no se tocan.</p>
             <Button variant="destructive" onClick={() => setConfirmReset(true)}>
-              <RotateCcw /> Borrar todos los datos
+              <RotateCcw /> Borrar el historial
             </Button>
           </div>
         </Card>
@@ -92,14 +128,14 @@ export default function AjustesPage() {
       <ConfirmDialog
         open={confirmReset}
         destructive
-        title="¿Borrar todos tus datos?"
-        description="Se pierden rutinas, ejercicios propios e historial. Esto no se puede deshacer."
-        confirmLabel="Borrar todo"
+        title="¿Borrar el historial?"
+        description="Se pierden todos los entrenamientos guardados. Esto no se puede deshacer."
+        confirmLabel="Borrar historial"
         onCancel={() => setConfirmReset(false)}
         onConfirm={() => {
           gym.reset()
           setConfirmReset(false)
-          setMsg({ tone: 'success', text: 'Datos borrados.' })
+          setMsg({ tone: 'success', text: 'Historial borrado.' })
         }}
       />
     </PageContainer>

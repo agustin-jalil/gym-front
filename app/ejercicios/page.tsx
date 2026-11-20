@@ -6,7 +6,8 @@ import { PageContainer, PageHeader } from '@/components/page'
 import { Badge, Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Chips, Field, Input, NativeSelect } from '@/components/ui/fields'
-import { EmptyState, LoadingState } from '@/components/ui/states'
+import { EmptyState } from '@/components/ui/states'
+import { GymLoading } from '@/components/gym-loading'
 import { gym, useGym } from '@/lib/store'
 import type { MuscleGroup } from '@/lib/types'
 import { MUSCLES, muscleLabel } from '@/lib/utils'
@@ -24,7 +25,7 @@ export default function EjerciciosPage() {
   if (!g.hydrated)
     return (
       <PageContainer size="sm">
-        <LoadingState />
+        <GymLoading />
       </PageContainer>
     )
 
